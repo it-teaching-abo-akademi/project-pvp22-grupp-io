@@ -1,0 +1,6 @@
+app:
+  datasource:
+    jdbc-url: jdbc:postgresql://localhost:5432/pvp
+    username: pvp_user
+    password: pvp_password
+    pool-size: 30

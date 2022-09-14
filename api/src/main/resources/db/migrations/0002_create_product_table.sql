@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS product;
+CREATE TABLE IF NOT EXISTS product (
+    id SERIAL PRIMARY KEY,
+    sku VARCHAR(100) NOT NULL,
+    price INT NOT NULL,
+    name VARCHAR(100)
+);
