@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class Datasource {
+    // Some text
+
 
     @Bean
     @ConfigurationProperties("app.datasource")
