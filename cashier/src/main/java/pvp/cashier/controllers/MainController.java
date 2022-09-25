@@ -8,7 +8,7 @@ import pvp.cashier.models.Order;
 import java.util.List;
 
 public class MainController {
-
+    
     @FXML ListView<String> selected;
 
     public void setModel(Order model) {
