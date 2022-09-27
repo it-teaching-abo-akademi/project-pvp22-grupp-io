@@ -1,2 +1,4 @@
-package pvp.cashier.controllers;public class ProductPopupController {
+package pvp.cashier.controllers;
+
+public class ProductPopupController {
 }

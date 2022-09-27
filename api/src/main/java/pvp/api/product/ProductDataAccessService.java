@@ -51,6 +51,16 @@ public class ProductDataAccessService {
         return null;
     }
 
+    public List<Product> selectAllProductsBySearch(String search) {
+        String sql = "" +
+                "SELECT * " +
+                "FROM product " +
+                "WHERE name ILIKE '%" + search + "%' OR " +
+                "sku ILIKE '%" + search + "%'";
+
+        return jdbcTemplate.query(sql, mapProductsFomDb());
+    }
+
     int insertProduct(String sku, Product product) {
         String sql = "" +
                 "INSERT INTO product (" +

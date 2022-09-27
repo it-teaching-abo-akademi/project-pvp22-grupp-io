@@ -17,6 +17,10 @@ public class ProductService {
         this.productDataAccessService = productDataAccessService;
     }
 
+    List<Product> getProductsBySearch(String search) {
+        return productDataAccessService.selectAllProductsBySearch(search);
+    }
+
     List<Product> getAllProducts() {
         return productDataAccessService.selectAllProducts();
     }

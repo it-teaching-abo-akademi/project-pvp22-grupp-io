@@ -29,6 +29,11 @@ public class ProductController {
         return productService.findBySku(sku);
     }
 
+    @GetMapping("/search/{input}")
+    public List<Product> getProductBySearch(@PathVariable(value = "input") String input){
+        return productService.getProductsBySearch(input);
+    }
+
     @PostMapping
     public void addNewProduct(@RequestBody Product product) {
         this.productService.addNewProduct(product);

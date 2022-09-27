@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.ListView?>
+
+<Pane xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="pvp.cashier.controllers.CustomerController">
+    <children>
+        <ListView fx:id="list" prefHeight="300.0" prefWidth="150.0" />
+    </children>
+</Pane>

@@ -71,7 +71,8 @@
             <Font size="18.0" />
          </font>
       </TextArea>
-      <TextField layoutX="3.0" layoutY="313.0" promptText="barcode or product name" />
-      <Button layoutY="339.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="150.0" text="search item" />
+      <TextField fx:id="skuInput" layoutX="3.0" layoutY="313.0" promptText="barcode or product name" />
+       <TextField fx:id="skuInput2" layoutX="3.0" layoutY="313.0" promptText="barcode or product name" />
+      <Button  layoutY="339.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="150.0" text="search item" onAction="#doSearch" />
    </children>
 </AnchorPane>
