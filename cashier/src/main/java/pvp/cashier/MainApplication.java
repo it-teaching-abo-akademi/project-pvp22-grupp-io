@@ -15,7 +15,6 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-
         model = new Order();
 
         FXMLLoader listLoader = new FXMLLoader(getClass().getResource("Customer.fxml"));
@@ -29,11 +28,8 @@ public class MainApplication extends Application {
         selectedController.setModel(model);
 
         primaryStage.setScene(new Scene(list));
-        primaryStage.setX(350); primaryStage.setY(300);
-
         Stage secondaryStage = new Stage();
         secondaryStage.setScene(new Scene(selected));
-        secondaryStage.setX(550); secondaryStage.setY(300);
 
         addMessages();
         primaryStage.show();

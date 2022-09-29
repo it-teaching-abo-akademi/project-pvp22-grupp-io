@@ -3,21 +3,20 @@ package pvp.cashier.controllers;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.stage.Window;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import pvp.cashier.models.Order;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
-import javafx.stage.Popup;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,22 +25,23 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import javafx.stage.Popup;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import pvp.models.interfaces.Product;
+import pvp.cashier.controllers.ProductPopupController;
 
 
 public class MainController {
 
+    @FXML
+    private Button SaveOrderButton;
     @FXML ListView<String> selected;
 
-    private List<Product> searchedProducts;
+    private List<Product> searchedProducts = new ArrayList<Product>();
 
     @FXML
     private TextField skuInput;
-
-    @FXML
-    private TextField skuInput2;
-
 
     public void setModel(Order model) {
 
@@ -57,6 +57,7 @@ public class MainController {
 
     @FXML
     private void doSearch(ActionEvent event) throws IOException {
+        openProductList();
         URL url = new URL("http://127.0.0.1:8080/api/products/search/" + this.skuInput.getText());
         HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
         httpURLConnection.setRequestMethod("GET");
@@ -89,6 +90,12 @@ public class MainController {
                         name,
                         sku
                 ));
+                try {
+                    openProductList();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
             });
 
 
@@ -113,24 +120,17 @@ public class MainController {
         }
     }
 
-    private EventHandler<ActionEvent> popupevent = new EventHandler<ActionEvent>() {
-        private Window skuInput2;
+    @FXML
+    private void openProductList() throws IOException{
+        FXMLLoader prodListLoader = new FXMLLoader(getClass().getResource("ProductPopup.fxml"));
+        Parent prod = prodListLoader.load();
 
-        @Override
-            public void handle(ActionEvent actionEvent) {
-                Popup popup = new Popup();
+        ProductPopupController popupController = prodListLoader.getController();
+        popupController.setSearchedProducts(searchedProducts);
 
-                TilePane tilepane = new TilePane();
-                Label label = new Label("This is a Popup");
-                label.setStyle(" -fx-background-color: white;");
-                popup.getContent().add(label);
+        Stage prodListStage = new Stage();
+        prodListStage.setScene(new Scene(prod));
+        prodListStage.show();
 
-                label.setMinWidth(80);
-                label.setMinHeight(50);
-                if (!popup.isShowing())
-                    popup.show(this.skuInput2);
-                else
-                    popup.hide();
-            }
-        };
+    }
 }
