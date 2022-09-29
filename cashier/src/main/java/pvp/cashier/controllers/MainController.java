@@ -33,13 +33,10 @@ import pvp.cashier.controllers.ProductPopupController;
 
 
 public class MainController {
-
     @FXML
     private Button SaveOrderButton;
     @FXML ListView<String> selected;
-
     private List<Product> searchedProducts = new ArrayList<Product>();
-
     @FXML
     private TextField skuInput;
 
@@ -57,7 +54,6 @@ public class MainController {
 
     @FXML
     private void doSearch(ActionEvent event) throws IOException {
-        openProductList();
         URL url = new URL("http://127.0.0.1:8080/api/products/search/" + this.skuInput.getText());
         HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
         httpURLConnection.setRequestMethod("GET");
@@ -90,17 +86,15 @@ public class MainController {
                         name,
                         sku
                 ));
-                try {
-                    openProductList();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
             });
-
-
+            try {
+                openProductList();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         } else {
             System.out.println("GET request not worked");
+            openProductList();
         }
 
 
