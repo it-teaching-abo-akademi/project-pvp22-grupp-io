@@ -4,8 +4,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import pvp.cashier.models.Order;
@@ -19,15 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import pvp.models.interfaces.OrderLine;
 import pvp.models.interfaces.Product;
 import pvp.cashier.controllers.ProductPopupController;
 
@@ -39,9 +37,12 @@ public class MainController {
     private List<Product> searchedProducts = new ArrayList<Product>();
     @FXML
     private TextField skuInput;
+    private Order order;
+    @FXML
+    private TableView<OrderLine> tableView;
 
     public void setModel(Order model) {
-
+        order = model;
         //listen to changes in model, and respond
         model.getSelectedMessages().addListener(
                 (ListChangeListener<String>) c -> {
@@ -54,6 +55,7 @@ public class MainController {
 
     @FXML
     private void doSearch(ActionEvent event) throws IOException {
+        searchedProducts = new ArrayList<Product>();
         URL url = new URL("http://127.0.0.1:8080/api/products/search/" + this.skuInput.getText());
         HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
         httpURLConnection.setRequestMethod("GET");
@@ -71,14 +73,8 @@ public class MainController {
             json.forEach(object -> {
                 JSONObject element = (JSONObject) object;
                 System.out.println(element);
-                String name = (String) element.get("name");
-                String sku = (String) element.get("sku");
-                if (name == null) {
-                    name = "";
-                }
-                if (sku == null) {
-                    sku = "";
-                }
+                String name = element.optString("name", "");
+                String sku = element.optString("sku", "");
 
                 searchedProducts.add(new pvp.models.Product(
                         element.getInt("pk"),
@@ -121,6 +117,7 @@ public class MainController {
 
         ProductPopupController popupController = prodListLoader.getController();
         popupController.setSearchedProducts(searchedProducts);
+        popupController.setOrder(order);
 
         Stage prodListStage = new Stage();
         prodListStage.setScene(new Scene(prod));

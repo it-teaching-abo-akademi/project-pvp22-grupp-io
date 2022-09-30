@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import pvp.models.Order;
 import pvp.models.interfaces.Product;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,18 +35,27 @@ public class ProductPopupController implements Initializable {
     @FXML
     private Button acceptbutton;
 
-    private final List<Product> searchedProducts = new ArrayList<Product>();
+    private Order order;
+
+    protected void setOrder(Order order) {
+        this.order = order;
+    }
 
     public void setSearchedProducts(List<Product> products){
-        searchedProducts.addAll(products);
-        searchedProducts.add(new pvp.models.Product(99,23, "Banana", "asd"));
-        prodTableView.getItems().addAll(searchedProducts);
+        prodTableView.getItems().addAll(products);
 
     }
 
     public void accept(ActionEvent event) {
-        Stage stage = (Stage) anchorPane.getScene().getWindow();
-        stage.close();
+        Product selectedProduct = prodTableView.getSelectionModel().getSelectedItem();
+        if (selectedProduct != null) {
+            this.order.addProduct(selectedProduct);
+            Stage stage = (Stage) anchorPane.getScene().getWindow();
+            stage.close();
+        }
+        else {
+            this.prodLabel.setText("Please, select a product!");
+        }
 
     }
 

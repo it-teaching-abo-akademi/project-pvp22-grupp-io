@@ -14,6 +14,7 @@ public interface Order extends PkModel {
 
     public Set<OrderLine> getOrderLines();
     public void addOrderLine(OrderLine orderLine);
+    public void addProduct(Product product);
     public Optional<OrderLine> getOrderLineById(int id);
     public void removeOrderLine(OrderLine orderLine);
     public void removeOrderLine(int orderLineId);

@@ -3,6 +3,7 @@ package pvp.models;
 import pvp.models.abstractModels.PkModel;
 import pvp.models.interfaces.OrderLine;
 import pvp.models.interfaces.Payment;
+import pvp.models.interfaces.Product;
 
 import java.util.Optional;
 import java.util.Set;
@@ -56,6 +57,13 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
 
     @Override
     public void addOrderLine(pvp.models.interfaces.OrderLine orderLine) {
+        this.orderLines.add(orderLine);
+    }
+
+    @Override
+    public void addProduct(Product product) {
+        int quantity = 1;
+        OrderLine orderLine = new pvp.models.OrderLine(null, product.getPrice(), quantity, product.getPrice() * quantity, product);
         this.orderLines.add(orderLine);
     }
 
