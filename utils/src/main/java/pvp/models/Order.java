@@ -56,29 +56,41 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
     }
 
     @Override
-    public void addOrderLine(pvp.models.interfaces.OrderLine orderLine) {
-        this.orderLines.add(orderLine);
-    }
+    public void addOrderLine(pvp.models.interfaces.OrderLine orderLine) { this.orderLines.add(orderLine); }
 
     @Override
     public void addProduct(Product product) {
-        int quantity = 1;
-        OrderLine orderLine = new pvp.models.OrderLine(null, product.getPrice(), quantity, product.getPrice() * quantity, product);
-        this.orderLines.add(orderLine);
+        Optional<OrderLine> possibleOrderLine = findOrderLineByProduct(product);
+        if (possibleOrderLine.isPresent()) {
+            OrderLine orderLine = possibleOrderLine.get();
+            int q = orderLine.getQuantity() + 1;
+            orderLine.setQuantity(q);
+        } else {
+            int quantity = 1;
+            OrderLine orderLine = new pvp.models.OrderLine(null, product.getPrice(), quantity, product.getPrice() * quantity, product);
+            this.addOrderLine(orderLine);
+        }
     }
 
-    @Override
-    public Optional<OrderLine> getOrderLineById(int id) {
-        Stream<OrderLine> filteredLines = this.orderLines.stream().filter(orderLine -> {
-            if (orderLine.getPk() == id) {
+    private Optional<OrderLine> findOrderLineByProduct(Product product) {
+        Stream<OrderLine> unFilteredLines = this.orderLines.stream();
+        Stream<OrderLine> filteredLines = unFilteredLines.filter(orderLine -> {
+            if (orderLine.getProductId() == product.getPk()) {
                 return true;
             }
             return false;
         });
-        if (filteredLines.count() > 0) {
-            return filteredLines.findFirst();
-        }
-        return null;
+        return filteredLines.findFirst();
+    }
+
+    @Override
+    public Optional<OrderLine> getOrderLineById(int id) {
+        Stream<OrderLine> unFilteredLines = this.orderLines.stream();
+        Stream<OrderLine> filteredLines = unFilteredLines.filter(orderLine -> {
+            if (orderLine.getPk() == id) { return true; }
+            return false;
+        });
+        return filteredLines.findFirst();
     }
 
     @Override
@@ -89,7 +101,7 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
     @Override
     public void removeOrderLine(int orderLineId) {
         Optional<OrderLine> line = this.getOrderLineById(orderLineId);
-        if (line == null) {
+        if (line.isEmpty()) {
             return;
         }
         this.orderLines.remove(line);

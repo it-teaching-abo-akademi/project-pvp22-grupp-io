@@ -1,5 +1,7 @@
 package pvp.cashier.models;
 
+import javafx.beans.Observable;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -7,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.UUID;
 
+import javafx.collections.ObservableSet;
 import pvp.models.User;
 import pvp.models.interfaces.OrderLine;
 import pvp.models.interfaces.Payment;

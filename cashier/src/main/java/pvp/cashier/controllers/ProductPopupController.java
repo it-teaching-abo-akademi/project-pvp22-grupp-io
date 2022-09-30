@@ -35,10 +35,10 @@ public class ProductPopupController implements Initializable {
     @FXML
     private Button acceptbutton;
 
-    private Order order;
+    private MainController mainController;
 
-    protected void setOrder(Order order) {
-        this.order = order;
+    protected void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 
     public void setSearchedProducts(List<Product> products){
@@ -49,7 +49,7 @@ public class ProductPopupController implements Initializable {
     public void accept(ActionEvent event) {
         Product selectedProduct = prodTableView.getSelectionModel().getSelectedItem();
         if (selectedProduct != null) {
-            this.order.addProduct(selectedProduct);
+            this.mainController.addSelectedProduct(selectedProduct);
             Stage stage = (Stage) anchorPane.getScene().getWindow();
             stage.close();
         }
