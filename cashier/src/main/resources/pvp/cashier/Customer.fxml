@@ -17,7 +17,7 @@
             <TableColumn fx:id="discountColumn" prefWidth="96.7999267578125" text="discount" />
         </columns>
       </TableView>
-      <TextField editable="false" layoutX="117.0" layoutY="432.0" />
+      <TextField editable="false" layoutX="117.0" layoutY="432.0" fx:id="orderTotal" />
       <Label alignment="CENTER" layoutX="129.0" layoutY="405.0" prefHeight="26.0" prefWidth="126.0" text="Total Order Price">
          <font>
             <Font size="16.0" />
@@ -28,6 +28,6 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <TextField editable="false" layoutX="117.0" layoutY="513.0" />
+      <TextField editable="false" layoutX="117.0" layoutY="513.0" fx:id="leftToPay"/>
    </children>
 </AnchorPane>

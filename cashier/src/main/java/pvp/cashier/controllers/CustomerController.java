@@ -25,6 +25,12 @@ public class CustomerController implements Initializable {
     private TableColumn<OrderLine, Integer> priceColumn;
     @FXML
     private TableColumn<OrderLine, Integer> discountColumn;
+
+    @FXML
+    private TextField orderTotal;
+
+    @FXML
+    private TextField leftToPay;
     private Order order;
     public void initialize(URL url, ResourceBundle resourceBundle) {
         amountColumn.setCellValueFactory(param -> {
@@ -54,5 +60,9 @@ public class CustomerController implements Initializable {
 
     public void updateOrderLines(){
         customerProdView.getItems().setAll(this.order.getOrderLines());
+        orderTotal.setText(String.valueOf(this.order.getTotalPrice()));
+        System.out.println(this.order.getTotalPrice());
+        System.out.println(this.order.getTotalPaidAmount());
+        leftToPay.setText(String.valueOf(this.order.getTotalPrice() - this.order.getTotalPaidAmount()));
     }
 }

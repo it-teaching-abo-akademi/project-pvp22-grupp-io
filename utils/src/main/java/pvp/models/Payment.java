@@ -6,7 +6,6 @@ import pvp.models.interfaces.Order;
 public class Payment extends PkModel implements pvp.models.interfaces.Payment {
     private PaymentType paymentType;
     private int amount;
-
     private Order order;
     private int orderId;
 

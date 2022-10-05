@@ -51,6 +51,13 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
         return this.totalPrice;
     }
 
+    @Override
+    public int getTotalPaidAmount() {
+        return this.payments.stream().mapToInt(payment -> {
+            return payment.getAmount();
+        }).sum();
+    }
+
     public Set<pvp.models.interfaces.OrderLine> getOrderLines() {
         return this.orderLines;
     }
@@ -70,6 +77,7 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
             OrderLine orderLine = new pvp.models.OrderLine(null, product.getPrice(), quantity, product.getPrice() * quantity, product);
             this.addOrderLine(orderLine);
         }
+        updateTotalPrice();
     }
 
     private Optional<OrderLine> findOrderLineByProduct(Product product) {
@@ -130,21 +138,12 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
     }
 
     @Override
-    public Payment createPayment(int amount, PaymentType paymentType, pvp.models.interfaces.Order order) {
-        return new pvp.models.Payment(null, amount, paymentType, order);
+    public void createPayment(int amount, PaymentType paymentType) {
+        this.payments.add(new pvp.models.Payment(null, amount, paymentType, this));
     }
 
     @Override
-    public Payment createPayment(int amount, String paymentType, pvp.models.interfaces.Order order) {
-        return new pvp.models.Payment(null, amount, paymentType, order);
-    }
-    @Override
-    public Payment createPayment(int amount, PaymentType paymentType, int orderId) {
-        return new pvp.models.Payment(null, amount, paymentType, orderId);
-    }
-
-    @Override
-    public Payment createPayment(int amount, String paymentType, int orderId) {
-        return new pvp.models.Payment(null, amount, paymentType, orderId);
+    public void createPayment(int amount, String paymentType) {
+        this.payments.add(new pvp.models.Payment(null, amount, paymentType, this));
     }
 }

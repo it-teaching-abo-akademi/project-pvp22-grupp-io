@@ -85,5 +85,6 @@ public class OrderLine extends PkModel implements pvp.models.interfaces.OrderLin
     @Override
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+        calculatePrice();
     }
 }

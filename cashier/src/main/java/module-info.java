@@ -3,6 +3,8 @@ module pvp.cashier {
     requires javafx.fxml;
     requires javafx.web;
     requires org.json;
+    requires jaxb.api;
+    requires jaxb.impl;
 
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;

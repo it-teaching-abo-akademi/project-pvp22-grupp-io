@@ -10,22 +10,32 @@ public interface Order extends PkModel {
     // Comment 2
 
     public void updateTotalPrice();
+
     public int getTotalPrice();
 
+    public int getTotalPaidAmount();
+
     public Set<OrderLine> getOrderLines();
+
     public void addOrderLine(OrderLine orderLine);
+
     public void addProduct(Product product);
+
     public Optional<OrderLine> getOrderLineById(int id);
+
     public void removeOrderLine(OrderLine orderLine);
+
     public void removeOrderLine(int orderLineId);
 
     public void setUser(User user);
+
     public void setUserId(int id);
+
     public User getUser();
+
     public int getUserId();
 
-    public Payment createPayment(int amount, PaymentType paymentType, Order order);
-    public Payment createPayment(int amount, String paymentType, Order order);
-    public Payment createPayment(int amount, PaymentType paymentType, int orderId);
-    public Payment createPayment(int amount, String paymentType, int orderId);
+    public void createPayment(int amount, PaymentType paymentType);
+
+    public void createPayment(int amount, String paymentType);
 }
