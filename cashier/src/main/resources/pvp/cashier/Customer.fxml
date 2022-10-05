@@ -7,27 +7,27 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="554.0" prefWidth="301.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pvp.cashier.controllers.CustomerController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="554.0" prefWidth="385.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pvp.cashier.controllers.CustomerController">
    <children>
-      <TableView fx:id="customerProdView" prefHeight="400.0" prefWidth="301.0">
+      <TableView fx:id="customerProdView" prefHeight="400.0" prefWidth="301.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columns>
-          <TableColumn fx:id="nameColumn" prefWidth="75.0" text="Item" />
-          <TableColumn fx:id="numberColumn" prefWidth="75.0" text="number" />
-            <TableColumn fx:id="priceColumn" prefWidth="75.0" text="price" />
-            <TableColumn fx:id="discountColumn" prefWidth="75.0" text="discount" />
+          <TableColumn fx:id="nameColumn" prefWidth="105.60003966093063" text="product name" />
+          <TableColumn fx:id="amountColumn" prefWidth="88.79998779296875" text="amount" />
+            <TableColumn fx:id="priceColumn" prefWidth="95.20005798339844" text="price" />
+            <TableColumn fx:id="discountColumn" prefWidth="96.7999267578125" text="discount" />
         </columns>
       </TableView>
-      <TextField editable="false" layoutX="76.0" layoutY="433.0" />
-      <Label alignment="CENTER" layoutX="85.0" layoutY="406.0" prefHeight="26.0" prefWidth="126.0" text="Total Order Price">
+      <TextField editable="false" layoutX="117.0" layoutY="432.0" />
+      <Label alignment="CENTER" layoutX="129.0" layoutY="405.0" prefHeight="26.0" prefWidth="126.0" text="Total Order Price">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <Label alignment="CENTER" layoutX="53.0" layoutY="487.0" prefHeight="26.0" prefWidth="192.0" text="Ammount Left To Pay">
+      <Label alignment="CENTER" layoutX="96.0" layoutY="486.0" prefHeight="26.0" prefWidth="192.0" text="Amount Left To Pay">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <TextField editable="false" layoutX="74.0" layoutY="514.0" />
+      <TextField editable="false" layoutX="117.0" layoutY="513.0" />
    </children>
 </AnchorPane>

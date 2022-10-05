@@ -1,9 +1,7 @@
 package pvp.cashier.controllers;
 
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +40,7 @@ public class MainController implements Initializable {
     @FXML
     private TableColumn<OrderLine, String> NameColumn;
     @FXML
-    private TableColumn<OrderLine, Integer> numberColumn;
+    private TableColumn<OrderLine, Integer> amountColumn;
     @FXML
     private TableColumn<OrderLine, Integer> priceColumn;
     @FXML
@@ -128,7 +125,7 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        numberColumn.setCellValueFactory(param -> {
+        amountColumn.setCellValueFactory(param -> {
             ObservableValue<Integer> q = new ReadOnlyObjectWrapper<Integer>(param.getValue().getQuantity());
             return q;
         });
