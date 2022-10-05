@@ -26,6 +26,7 @@ public class MainApplication extends Application {
         Parent selected = selectedLoader.load();
         MainController selectedController = selectedLoader.getController();
         selectedController.setModel(model);
+        selectedController.setCustomerController(listController);
 
         primaryStage.setScene(new Scene(list));
         Stage secondaryStage = new Stage();

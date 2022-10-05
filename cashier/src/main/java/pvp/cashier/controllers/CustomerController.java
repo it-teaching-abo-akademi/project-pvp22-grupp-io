@@ -1,39 +1,58 @@
 package pvp.cashier.controllers;
 
 
-import javafx.collections.ListChangeListener;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import pvp.cashier.models.Order;
+import pvp.models.interfaces.OrderLine;
+import pvp.models.interfaces.Product;
 
-import java.util.List;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class CustomerController {
+public class CustomerController implements Initializable {
 
     @FXML
-    ListView<String> list;
-
-    public void setModel(Order model) {
-
-        list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);//allow multiple selection
-
-        //sets the selected items of the list to the model
-        model.setSelected(list.getSelectionModel().getSelectedItems());
-
-        //listen to changes in model, and respond
-        model.getMessages().addListener(
-                (ListChangeListener<String>) c -> {
-                    c.next();
-                    addElements(c.getAddedSubList());
-                }
-        );
+    private TableView<OrderLine> customerProdView;
+    @FXML
+    private TableColumn<OrderLine, String> nameColumn;
+    @FXML
+    private TableColumn<OrderLine, Integer> numberColumn;
+    @FXML
+    private TableColumn<OrderLine, Integer> priceColumn;
+    @FXML
+    private TableColumn<OrderLine, Integer> discountColumn;
+    private Order order;
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        numberColumn.setCellValueFactory(param -> {
+            ObservableValue<Integer> q = new ReadOnlyObjectWrapper<Integer>(param.getValue().getQuantity());
+            return q;
+        });
+        priceColumn.setCellValueFactory(param -> {
+            ObservableValue<Integer> q = new ReadOnlyObjectWrapper<Integer>(param.getValue().getTotalPrice());
+            return q;
+        });
+        discountColumn.setCellValueFactory(param -> {
+            OrderLine orderline = param.getValue();
+            Product product = orderline.getProduct();
+            ObservableValue<Integer> q = new ReadOnlyObjectWrapper<Integer>(product.getPrice() * orderline.getQuantity() - orderline.getTotalPrice());
+            return q;
+        });
+        nameColumn.setCellValueFactory(param -> {
+            String name = param.getValue().getProduct().getName() + "(" + param.getValue().getProduct().getSku() + ")";
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(name);
+            return q;
+        });
     }
 
-    private void addElements(List<? extends String> msgList){
+    public void setModel(Order model) {
+        order = model;
+    }
 
-        for(String msg : msgList){
-            list.getItems().add(msg);
-        }
+    public void updateOrderLines(){
+        customerProdView.getItems().setAll(this.order.getOrderLines());
     }
 }

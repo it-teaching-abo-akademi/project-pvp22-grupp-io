@@ -5,13 +5,11 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import pvp.cashier.models.Order;
@@ -25,18 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.*;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import pvp.models.interfaces.OrderLine;
 import pvp.models.interfaces.Product;
-import pvp.cashier.controllers.ProductPopupController;
 
 
 public class MainController implements Initializable {
@@ -58,16 +49,14 @@ public class MainController implements Initializable {
     @FXML
     private TableColumn<OrderLine, Integer> discountColumn;
 
+    private CustomerController customerController;
+
     public void setModel(Order model) {
         order = model;
-        //listen to changes in model, and respond
-        model.getSelectedMessages().addListener(
-                (ListChangeListener<String>) c -> {
-                    c.next();
-                    removeElements(c.getRemoved());
-                    addElements(c.getAddedSubList());
-                }
-        );
+    }
+
+    public void setCustomerController(CustomerController customerController){
+        this.customerController = customerController;
     }
 
     @FXML
@@ -112,20 +101,6 @@ public class MainController implements Initializable {
 
     }
 
-    private void removeElements(List<? extends String> msgList){
-
-        for(String msg : msgList){
-            selected.getItems().remove(msg);
-        }
-    }
-
-    private void addElements(List<? extends String> msgList){
-
-        for(String msg : msgList){
-            selected.getItems().add(msg);
-        }
-    }
-
     protected void addSelectedProduct(Product product){
         order.addProduct(product);
         updateOrderLines();
@@ -133,6 +108,7 @@ public class MainController implements Initializable {
 
     private void updateOrderLines(){
         prodTableView.getItems().setAll(this.order.getOrderLines());
+        customerController.updateOrderLines();
     }
 
     @FXML
