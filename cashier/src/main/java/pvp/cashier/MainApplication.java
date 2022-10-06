@@ -32,6 +32,11 @@ public class MainApplication extends Application {
         Stage secondaryStage = new Stage();
         secondaryStage.setScene(new Scene(selected));
 
+        primaryStage.setX(150);
+        primaryStage.setY(200);
+        secondaryStage.setX(800);
+        secondaryStage.setY(200);
+
         addMessages();
         primaryStage.show();
         secondaryStage.show();

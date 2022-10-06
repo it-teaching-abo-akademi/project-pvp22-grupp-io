@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="387.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pvp.cashier.controllers.SavedOrdersPopupController">
+   <children>
+      <Button fx:id="acceptbutton" layoutX="167.0" layoutY="455.0" mnemonicParsing="false" onAction="#accept" text="Accept" AnchorPane.bottomAnchor="14.399999999999977" />
+      <Label fx:id="orderLabel" alignment="CENTER" layoutX="-1.0" layoutY="8.0" prefHeight="36.0" prefWidth="387.0" text="Select order" textAlignment="CENTER">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </Label>
+      <TableView fx:id="orderTableView" layoutX="14.0" layoutY="63.0" prefHeight="200.0" prefWidth="301.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+        <columns>
+          <TableColumn fx:id="priceColumn" prefWidth="95.99994051456451" text="Total Price" />
+          <TableColumn fx:id="productsColumn" prefWidth="110.40001678466797" text="Products" />
+            <TableColumn fx:id="paymentsColumn" prefWidth="80.7999267578125" text="Payments" />
+            <TableColumn fx:id="userIdColumn" prefWidth="100.0" text="UserID" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

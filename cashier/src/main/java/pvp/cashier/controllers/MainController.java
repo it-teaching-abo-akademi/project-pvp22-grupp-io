@@ -63,6 +63,8 @@ public class MainController implements Initializable {
     private Button SaveOrderButton;
     @FXML ListView<String> selected;
     private List<Product> searchedProducts = new ArrayList<Product>();
+
+    private List<Order> searchedOrders = new ArrayList<Order>();
     @FXML
     private TextField skuInput;
 
@@ -121,11 +123,7 @@ public class MainController implements Initializable {
                         sku
                 ));
             });
-            try {
-                openProductList();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            openProductList();
         } else {
             System.out.println("GET request not worked");
             openProductList();
@@ -144,13 +142,29 @@ public class MainController implements Initializable {
         customerController.updateOrderLines();
     }
 
-    @FXML
     private void openProductList() throws IOException{
         FXMLLoader prodListLoader = new FXMLLoader(getClass().getResource("ProductPopup.fxml"));
         Parent prod = prodListLoader.load();
 
         ProductPopupController popupController = prodListLoader.getController();
         popupController.setSearchedProducts(searchedProducts);
+        popupController.setMainController(this);
+
+        Stage prodListStage = new Stage();
+        prodListStage.setScene(new Scene(prod));
+        prodListStage.show();
+
+    }
+    @FXML
+    private void openOrderList(ActionEvent event) throws IOException{
+        FXMLLoader orderListLoader = new FXMLLoader(getClass().getResource("OrdersPopup.fxml"));
+        Parent prod = orderListLoader.load();
+
+        SavedOrdersPopupController popupController = orderListLoader.getController();
+
+        searchedOrders.add(order);
+
+        popupController.setSearchedOrders(searchedOrders);
         popupController.setMainController(this);
 
         Stage prodListStage = new Stage();
