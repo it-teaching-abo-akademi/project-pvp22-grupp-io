@@ -52,7 +52,7 @@
          <buttons>
             <Button alignment="CENTER" mnemonicParsing="false" prefHeight="26.0" prefWidth="229.0" text="New Order" />
             <Button fx:id="SaveOrderButton" alignment="CENTER" mnemonicParsing="false" prefHeight="26.0" prefWidth="236.0" text="Save Order" />
-            <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="205.0" text="View Orders" onAction="#openOrderList" />
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#openOrderList" prefHeight="26.0" prefWidth="205.0" text="View Orders" />
             <Button alignment="CENTER" mnemonicParsing="false" prefHeight="26.0" prefWidth="198.0" text="Print Receipt" />
          </buttons>
       </ButtonBar>
