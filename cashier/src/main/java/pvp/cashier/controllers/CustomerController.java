@@ -25,13 +25,12 @@ public class CustomerController implements Initializable {
     private TableColumn<OrderLine, Integer> priceColumn;
     @FXML
     private TableColumn<OrderLine, Integer> discountColumn;
-
     @FXML
     private TextField orderTotal;
-
     @FXML
     private TextField leftToPay;
     private Order order;
+
     public void initialize(URL url, ResourceBundle resourceBundle) {
         amountColumn.setCellValueFactory(param -> {
             ObservableValue<Integer> q = new ReadOnlyObjectWrapper<Integer>(param.getValue().getQuantity());

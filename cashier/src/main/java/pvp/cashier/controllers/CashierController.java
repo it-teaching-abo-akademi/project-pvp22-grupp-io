@@ -34,7 +34,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 
-public class MainController implements Initializable {
+public class CashierController implements Initializable {
 
     private static final URL cashBoxStatusUrl;
     private static final URL cashBoxOpenUrl;
@@ -61,18 +61,12 @@ public class MainController implements Initializable {
 
     @FXML
     private Button SaveOrderButton;
-    @FXML ListView<String> selected;
-    private List<Product> searchedProducts = new ArrayList<Product>();
-
-    private List<Order> searchedOrders = new ArrayList<Order>();
     @FXML
     private TextField skuInput;
-
     @FXML
     private TextField cashAmount;
     @FXML
     private TextField amountToCustomer;
-    private Order order;
     @FXML
     private TableView<OrderLine> prodTableView;
     @FXML
@@ -85,13 +79,26 @@ public class MainController implements Initializable {
     private TableColumn<OrderLine, Integer> discountColumn;
 
     private CustomerController customerController;
+    private Order order;
+    private List<Product> searchedProducts = new ArrayList<Product>();
+    private List<Order> searchedOrders = new ArrayList<Order>();
+
 
     public void setModel(Order model) {
         order = model;
+        customerController.setModel(order);
+        updateOrderLines();
     }
 
     public void setCustomerController(CustomerController customerController){
         this.customerController = customerController;
+    }
+
+    @FXML
+    private void newOrder(){
+        order = new Order();
+        customerController.setModel(order);
+        updateOrderLines();
     }
 
     @FXML
@@ -128,8 +135,6 @@ public class MainController implements Initializable {
             System.out.println("GET request not worked");
             openProductList();
         }
-
-
     }
 
     protected void addSelectedProduct(Product product){
@@ -153,8 +158,8 @@ public class MainController implements Initializable {
         Stage prodListStage = new Stage();
         prodListStage.setScene(new Scene(prod));
         prodListStage.show();
-
     }
+
     @FXML
     private void openOrderList(ActionEvent event) throws IOException{
         FXMLLoader orderListLoader = new FXMLLoader(getClass().getResource("OrdersPopup.fxml"));
@@ -211,6 +216,7 @@ public class MainController implements Initializable {
             updateOrderLines();
         } catch (NumberFormatException e){}
     }
+
     @FXML
     private void payWithCard(ActionEvent event) throws IOException, JAXBException, InterruptedException {
         HttpURLConnection httpURLConnection = (HttpURLConnection) cradReaderStatusUrl.openConnection();

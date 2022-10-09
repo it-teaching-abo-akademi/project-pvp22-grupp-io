@@ -9,54 +9,59 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import pvp.models.Order;
 import pvp.models.interfaces.Product;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class ProductPopupController implements Initializable {
     @FXML
-    private TableColumn nameColumn;
+    private TableColumn<Product, String> nameColumn;
     @FXML
-    private TableColumn priceColumn;
+    private TableColumn<Product, Integer> priceColumn;
     @FXML
-    private TableColumn skuColumn;
+    private TableColumn<Product, Integer> skuColumn;
     @FXML
-    private TableColumn pkColumn;
+    private TableColumn<Product, Integer> pkColumn;
     @FXML
     private Label prodLabel;
-    private String curretProd;
     @FXML
     private  AnchorPane anchorPane;
     @FXML
     private TableView<Product> prodTableView;
-    @FXML
-    private Button acceptbutton;
+    private CashierController cashierController;
+    private String currentProd;
 
-    private MainController mainController;
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        createTableView();
+        prodTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Product>() {
+            @Override
+            public void changed(ObservableValue<? extends Product> observableValue, Product product, Product t1) {
+                currentProd = prodTableView.getSelectionModel().getSelectedItem().getName();
+                prodLabel.setText(currentProd);
+            }
+        });
+    }
 
-    protected void setMainController(MainController mainController) {
-        this.mainController = mainController;
+    protected void setMainController(CashierController cashierController) {
+        this.cashierController = cashierController;
     }
 
     public void setSearchedProducts(List<Product> products){
         prodTableView.getItems().addAll(products);
-
     }
 
     public void accept(ActionEvent event) {
         Product selectedProduct = prodTableView.getSelectionModel().getSelectedItem();
         if (selectedProduct != null) {
-            this.mainController.addSelectedProduct(selectedProduct);
+            this.cashierController.addSelectedProduct(selectedProduct);
             Stage stage = (Stage) anchorPane.getScene().getWindow();
             stage.close();
         }
         else {
             this.prodLabel.setText("Please, select a product!");
         }
-
     }
 
     private void createTableView(){
@@ -66,15 +71,5 @@ public class ProductPopupController implements Initializable {
         skuColumn.setCellValueFactory(new PropertyValueFactory<>("sku" ));
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        createTableView();
-        prodTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Product>() {
-            @Override
-            public void changed(ObservableValue<? extends Product> observableValue, Product product, Product t1) {
-                curretProd = prodTableView.getSelectionModel().getSelectedItem().getName();
-                prodLabel.setText(curretProd);
-            }
-        });
-    }
+
 }

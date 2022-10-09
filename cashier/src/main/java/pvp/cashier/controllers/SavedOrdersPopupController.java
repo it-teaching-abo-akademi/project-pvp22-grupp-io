@@ -14,7 +14,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import pvp.cashier.models.Order;
-import pvp.models.interfaces.Product;
 
 import java.net.URL;
 import java.util.List;
@@ -39,10 +38,10 @@ public class SavedOrdersPopupController implements Initializable {
     @FXML
     private Button acceptbutton;
 
-    private MainController mainController;
+    private CashierController cashierController;
 
-    protected void setMainController(MainController mainController) {
-        this.mainController = mainController;
+    protected void setMainController(CashierController cashierController) {
+        this.cashierController = cashierController;
     }
 
     public void setSearchedOrders(List<Order> orders){

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="588.0" prefWidth="670.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pvp.cashier.controllers.MainController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="588.0" prefWidth="670.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pvp.cashier.controllers.CashierController">
    <children>
       <TableView fx:id="prodTableView" layoutY="-3.0" prefHeight="317.0" prefWidth="670.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columns>
@@ -50,7 +50,7 @@
       </Label>
       <ButtonBar layoutX="-5.0" layoutY="490.0" prefHeight="40.0" prefWidth="655.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="15.0">
          <buttons>
-            <Button alignment="CENTER" mnemonicParsing="false" prefHeight="26.0" prefWidth="229.0" text="New Order" />
+            <Button alignment="CENTER" mnemonicParsing="false" prefHeight="26.0" prefWidth="229.0" text="New Order" onAction="#newOrder"/>
             <Button fx:id="SaveOrderButton" alignment="CENTER" mnemonicParsing="false" prefHeight="26.0" prefWidth="236.0" text="Save Order" />
             <Button alignment="CENTER" mnemonicParsing="false" onAction="#openOrderList" prefHeight="26.0" prefWidth="205.0" text="View Orders" />
             <Button alignment="CENTER" mnemonicParsing="false" prefHeight="26.0" prefWidth="198.0" text="Print Receipt" />
