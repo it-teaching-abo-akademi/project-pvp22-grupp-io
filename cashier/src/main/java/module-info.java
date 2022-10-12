@@ -13,6 +13,8 @@ module pvp.cashier {
     requires org.kordamp.bootstrapfx.core;
     requires com.almasb.fxgl.all;
     requires pvp.models;
+    requires java.sql;
+    requires gson;
 
     opens pvp.cashier to javafx.fxml;
     exports pvp.cashier;

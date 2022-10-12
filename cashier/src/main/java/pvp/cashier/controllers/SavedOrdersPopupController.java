@@ -13,7 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import pvp.cashier.models.Order;
+import pvp.models.interfaces.Order;
 
 import java.net.URL;
 import java.util.List;

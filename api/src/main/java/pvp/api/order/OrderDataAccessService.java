@@ -38,6 +38,14 @@ public class OrderDataAccessService {
         return jdbcTemplate.query(sql, mapOrdersFomDb());
     }
 
+    List<Order> selectIncompleteOrders() {
+        String sql =
+                "SELECT * " +
+                "FROM \"order\"" +
+                "WHERE completed = false";
+        return jdbcTemplate.query(sql, mapOrdersFomDb());
+    }
+
     Order getOrderById(int id) {
         String sql = "" +
                 "SELECT *" +
@@ -62,8 +70,8 @@ public class OrderDataAccessService {
         String sql = "" +
                 "INSERT INTO \"order\" (" +
                 " user_id," +
-                " total_price) "+
-                "VALUES (?, ?)";
+                " total_price, completed) "+
+                "VALUES (?, ?, ?)";
 
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         int returnValue = jdbcTemplate.update(conn -> {
@@ -72,6 +80,7 @@ public class OrderDataAccessService {
                     // Set parameters
                     preparedStatement.setInt(1, order.getUserId());
                     preparedStatement.setInt(2, order.getTotalPrice());
+                    preparedStatement.setBoolean(3, order.isComplete());
 
                     return preparedStatement;
 
@@ -81,7 +90,7 @@ public class OrderDataAccessService {
         int orderId = (int) keys.get(0).get("id");
 
         String orderLineSql = "INSERT INTO order_line (" +
-                " line_price, " +
+                " total_price, " +
                 " quantity, " +
                 " order_id, " +
                 " product_id) "+
@@ -138,13 +147,15 @@ public class OrderDataAccessService {
             Set<Payment> payments = paymentService.getPaymentsByOrderId(pk).stream().collect(Collectors.toSet());
 
             int total_price = resultSet.getInt("total_price");
+            boolean complete = resultSet.getBoolean("complete");
 
             return new Order(
                     pk,
                     total_price,
                     orderLines,
                     user,
-                    payments
+                    payments,
+                    complete
             );
         };
     }

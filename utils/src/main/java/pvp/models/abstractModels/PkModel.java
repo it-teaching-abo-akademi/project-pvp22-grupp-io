@@ -10,7 +10,7 @@ public abstract class PkModel implements pvp.models.interfaces.PkModel {
     }
 
     @Override
-    public int getPk() {
+    public Integer getPk() {
         return pk;
     }
 }

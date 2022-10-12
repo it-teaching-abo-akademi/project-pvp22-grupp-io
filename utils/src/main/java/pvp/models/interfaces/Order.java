@@ -17,6 +17,10 @@ public interface Order extends PkModel {
 
     public Set<OrderLine> getOrderLines();
 
+    public boolean isComplete();
+
+    public void setIsComplete(boolean isComplete);
+
     public void addOrderLine(OrderLine orderLine);
 
     public void addProduct(Product product);

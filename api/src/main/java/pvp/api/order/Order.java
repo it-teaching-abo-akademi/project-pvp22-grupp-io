@@ -14,8 +14,9 @@ public class Order extends pvp.models.Order implements Serializable {
             @JsonProperty("order_total") int order_total,
             @JsonProperty("order_lines") Set<OrderLine> orderLines,
             @JsonProperty("user") User user,
-            @JsonProperty("payment_lines") Set<Payment> payments
+            @JsonProperty("payment_lines") Set<Payment> payments,
+            @JsonProperty("complete") boolean complete
             ) {
-        super(pk, order_total, orderLines, user, payments);
+        super(pk, order_total, orderLines, user, payments, complete);
     }
 }

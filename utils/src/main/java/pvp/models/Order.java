@@ -15,29 +15,36 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
     private Set<Payment> payments;
     private pvp.models.interfaces.User user;
     private int userId;
+
+    private boolean complete;
+
     public Order(
             Integer pk, int totalPrice,
             Set<pvp.models.interfaces.OrderLine> orderLines,
             pvp.models.interfaces.User user,
-            Set<Payment> payments
+            Set<Payment> payments,
+            boolean complete
     ) {
         super(pk);
         this.totalPrice = totalPrice;
         this.payments = payments;
         this.orderLines = orderLines;
         this.user = user;
+        this.complete = complete;
     }
     public Order(
             int pk, int totalPrice,
             Set<pvp.models.interfaces.OrderLine> orderLines,
             int userId,
-            Set<Payment> payments
+            Set<Payment> payments,
+            boolean complete
     ) {
         super(pk);
         this.totalPrice = totalPrice;
         this.payments = payments;
         this.orderLines = orderLines;
         this.userId = userId;
+        this.complete = complete;
     }
 
     @Override
@@ -52,10 +59,16 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
     }
 
     @Override
+    public boolean isComplete() { return this.complete; }
+    @Override
     public int getTotalPaidAmount() {
         return this.payments.stream().mapToInt(payment -> {
             return payment.getAmount();
         }).sum();
+    }
+
+    public Set<Payment> getPayments() {
+        return this.payments;
     }
 
     public Set<pvp.models.interfaces.OrderLine> getOrderLines() {
@@ -120,6 +133,8 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
         this.user = user;
     }
 
+    @Override
+    public void setIsComplete(boolean isComplete) { this.complete = isComplete; }
     @Override
     public void setUserId(int id) {
         this.userId = id;

@@ -16,6 +16,10 @@ public class OrderService {
         return orderDataAccessService.selectAllOrders();
     }
 
+    List<Order> getIncompleteOrders() {
+        return orderDataAccessService.selectIncompleteOrders();
+    }
+
     Order findById(int id) { return orderDataAccessService.getOrderById(id); }
 
     int addNewOrder(Order order) {

@@ -18,13 +18,18 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<Order> getAllUsers() {
+    public List<Order> getAllOrders() {
         return this.orderService.getAllOrders();
     }
 
     @GetMapping("/{id}")
     public Order getNoteById(@PathVariable(value = "id") int id){
         return orderService.findById(id);
+    }
+
+    @GetMapping("/incomplete")
+    public List<Order> getIncompleteOrders() {
+        return this.orderService.getIncompleteOrders();
     }
 
     @PostMapping

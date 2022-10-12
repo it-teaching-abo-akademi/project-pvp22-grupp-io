@@ -1,5 +1,8 @@
 package pvp.cashier.controllers;
 
+import com.almasb.fxgl.entity.action.Action;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -38,6 +41,7 @@ import javafx.stage.Stage;
 import javafx.scene.Parent;
 import pvp.models.PaymentType;
 import pvp.models.interfaces.OrderLine;
+import pvp.models.interfaces.Payment;
 import pvp.models.interfaces.Product;
 
 import javax.xml.bind.JAXBContext;
@@ -82,6 +86,8 @@ public class CashierController implements Initializable {
     @FXML
     private TextField amountToCustomer;
     @FXML
+    private TextField cardStatus;
+    @FXML
     private TableView<OrderLine> prodTableView;
     @FXML
     private TableColumn<OrderLine, String> NameColumn;
@@ -95,7 +101,7 @@ public class CashierController implements Initializable {
     private CustomerController customerController;
     private Order order;
     private List<Product> searchedProducts = new ArrayList<Product>();
-    private List<Order> searchedOrders = new ArrayList<Order>();
+    private List<pvp.models.interfaces.Order> searchedOrders = new ArrayList<pvp.models.interfaces.Order>();
 
 
     public void setModel(Order model) {
@@ -116,6 +122,54 @@ public class CashierController implements Initializable {
     }
 
     @FXML
+    public void saveOrder(ActionEvent event) throws IOException {
+        JSONObject json = new JSONObject();
+        JSONObject user = new JSONObject();
+        List<JSONObject> payments = new ArrayList<JSONObject>();
+        List<JSONObject> orderlines = new ArrayList<JSONObject>();
+
+        json.accumulate("pk", this.order.getPk());
+        json.accumulate("order_total", this.order.getTotalPrice());
+        json.accumulate("userId", this.order.getUserId());
+        json.accumulate("complete", this.order.isComplete());
+        user.accumulate("pk", this.order.getUser().getPk());
+        user.accumulate("customerReference", this.order.getUser().getCustomerReference());
+        user.accumulate("name", this.order.getUser().getName());
+
+        for (Payment payment: this.order.getPayments() ) {
+            JSONObject jsonPayment = new JSONObject();
+            jsonPayment.accumulate("pk", payment.getPk());
+            jsonPayment.accumulate("paymentType", payment.getPaymentType());
+            jsonPayment.accumulate("amount", payment.getAmount());
+            payments.add(jsonPayment);
+        }
+
+        for (OrderLine orderLine: this.order.getOrderLines()) {
+            JSONObject jsonOrderLine = new JSONObject();
+            jsonOrderLine.accumulate("pk", orderLine.getPk());
+            jsonOrderLine.accumulate("unitPrice", orderLine.getUnitPrice());
+            jsonOrderLine.accumulate("quantity", orderLine.getQuantity());
+            jsonOrderLine.accumulate("totalPrice", orderLine.getTotalPrice());
+            jsonOrderLine.accumulate("productId", orderLine.getProductId());
+            orderlines.add(jsonOrderLine);
+        }
+        json.accumulate("user", user);
+        json.accumulate("order_lines", orderlines);
+        json.accumulate("payment_lines", payments);
+
+        URL postURL = new URL("http://localhost:8080/api/orders");
+        HttpURLConnection httpURLConnection = (HttpURLConnection) postURL.openConnection();
+        httpURLConnection.setRequestProperty("Content-Type", "application/json");
+        httpURLConnection.setRequestMethod("POST");
+        httpURLConnection.setDoOutput(true);
+        OutputStream os = httpURLConnection.getOutputStream();
+        os.write(json.toString().getBytes());
+        os.flush();
+        os.close();
+        System.out.println(httpURLConnection.getResponseCode());
+    }
+
+    @FXML
     private void doSearch(ActionEvent event) throws IOException {
         searchedProducts = new ArrayList<Product>();
         URL url = new URL("http://127.0.0.1:8080/api/products/search/" + this.skuInput.getText());
@@ -132,19 +186,33 @@ public class CashierController implements Initializable {
             } in .close();
 
             JSONArray json = new JSONArray(response.toString());
-            json.forEach(object -> {
-                JSONObject element = (JSONObject) object;
+            if (json.length() == 1) {
+                JSONObject element = (JSONObject) json.get(0);
                 String name = element.optString("name", "");
                 String sku = element.optString("sku", "");
 
-                searchedProducts.add(new pvp.models.Product(
+                addSelectedProduct(new pvp.models.Product(
                         element.getInt("pk"),
                         element.getInt("price"),
                         name,
                         sku
                 ));
-            });
-            openProductList();
+            }
+            else {
+                json.forEach(object -> {
+                    JSONObject element = (JSONObject) object;
+                    String name = element.optString("name", "");
+                    String sku = element.optString("sku", "");
+
+                    searchedProducts.add(new pvp.models.Product(
+                            element.getInt("pk"),
+                            element.getInt("price"),
+                            name,
+                            sku
+                    ));
+                });
+                openProductList();
+            }
         } else {
             System.out.println("GET request not worked");
             openProductList();
@@ -176,6 +244,31 @@ public class CashierController implements Initializable {
 
     @FXML
     private void openOrderList(ActionEvent event) throws IOException{
+        searchedOrders = new ArrayList<pvp.models.interfaces.Order>();
+        URL url = new URL("http://127.0.0.1:8080/api/orders/incomplete/");
+        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+        httpURLConnection.setRequestMethod("GET");
+        int responseCode = httpURLConnection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) { // success
+            BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            JSONArray json = new JSONArray(response.toString());
+            json.forEach(object -> {
+                JSONObject element = (JSONObject) object;
+                String name = element.optString("name", "");
+                String sku = element.optString("sku", "");
+
+
+            });
+        }
+
         FXMLLoader orderListLoader = new FXMLLoader(getClass().getResource("OrdersPopup.fxml"));
         Parent prod = orderListLoader.load();
 
@@ -232,26 +325,50 @@ public class CashierController implements Initializable {
     }
 
     @FXML
-    private void saveReceipt(ActionEvent event) throws IOException, DocumentException {
-        String date = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss").format(new Date());
-        FileOutputStream fos = new FileOutputStream("../receipts/receipt-" + date + ".pdf");
+    private void saveReceipt(ActionEvent event) throws DocumentException, IOException {
+        String date = new SimpleDateFormat("dd_MM_yyyy__HH_mm_ss").format(new Date());
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream("../receipts/receipt-" + date + ".pdf");
+        } catch (FileNotFoundException e) {
+            fos = new FileOutputStream("~\\..\\receipts\\receipt_" + date + ".pdf");
+        }
 
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document();
         PdfWriter writer = PdfWriter.getInstance(doc, fos);
 
+        date = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
+
         doc.open();
         //adding paragraphs to the PDF
-        doc.add(new Paragraph("                        HSBC Bank (USA)"));
+        doc.add(new Paragraph("Order from grupp 10's cashier"));
         doc.add(new Paragraph("                                       "));
-        doc.add(new Paragraph("Account Holder Name: Rachel Weisz"));
-        doc.add(new Paragraph("Account Number: xxx-xxx-xxx-234"));
-        doc.add(new Paragraph("Branch:  Los Angeles"));
-        doc.add(new Paragraph("Branch Code: 18743"));
-        doc.add(new Paragraph("Mobile Number: +1 (xxxx)-xxx-456"));
-        doc.add(new Paragraph("Address: P.O. Box 1421, PC 111, CPO, New York (USA)"));
-        doc.add(new Paragraph("Debit Card Number: xxxx-xxxx-xxxx-0987"));
-        doc.add(new Paragraph("e-mail: rachel@gmial.com"));
-        doc.add(new Paragraph("Toll Free Number: 18000xxxxx"));
+        doc.add(new Paragraph("Purchase date: " + date));
+        doc.add(new Paragraph("Items"));
+        doc.add(new Paragraph(String.format("----------------------------------------------------------------------------")));
+        for (OrderLine orderLine: this.order.getOrderLines()) {
+            doc.add(new Paragraph(String.format(
+                    "%s\n%s %50d * %d = %d",
+                    orderLine.getProduct().getName(),
+                    orderLine.getProduct().getSku(),
+                    orderLine.getUnitPrice(),
+                    orderLine.getQuantity(),
+                    orderLine.getTotalPrice()
+            )));
+        }
+        doc.add(new Paragraph("\n        Order total: " + order.getTotalPrice()));
+        doc.add(new Paragraph("Payments:"));
+        for (Payment payment: this.order.getPayments()) {
+            doc.add(new Paragraph(String.format("    - %s: %s, %9s: %s",
+                    "Payment type", payment.getPaymentType(),
+                    "Amount", payment.getAmount())));
+        }
+        doc.add(new Paragraph("VAT: "));
+        doc.add(new Paragraph());
+
+        if (order.getUser() != null) {
+            doc.add(new Paragraph("User no." + order.getUser().getCustomerReference()));
+        }
         //closes the document
         doc.close();
         //closes the output stream
@@ -306,6 +423,8 @@ public class CashierController implements Initializable {
             if (response.toString().equals("DONE")) {
                 break;
             }
+            cardStatus.setText(response.toString());
+            System.out.println(response.toString());
             TimeUnit.SECONDS.sleep(1);
         }
 
@@ -333,6 +452,7 @@ public class CashierController implements Initializable {
         String paymentState = result.getElementsByTagName("paymentState").item(0).getTextContent();
         String paymentCardType = result.getElementsByTagName("paymentCardType").item(0).getTextContent();
 
+        cardStatus.setText(paymentState);
         if (paymentState.equals("ACCEPTED")) {
             this.order.createPayment(amountToPay, PaymentType.CARD);
         }

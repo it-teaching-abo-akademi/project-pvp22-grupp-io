@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS "order" (
     id SERIAL PRIMARY KEY,
     user_id INT,
     total_price INT,
+    completed BOOLEAN,
     CONSTRAINT user_fk FOREIGN KEY(user_id) REFERENCES "user"(id) ON DELETE RESTRICT
 );
 
