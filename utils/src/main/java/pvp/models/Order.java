@@ -139,7 +139,7 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
 
     @Override
     public void createPayment(int amount, PaymentType paymentType) {
-        this.payments.add(new pvp.models.Payment(null, amount, paymentType, this));
+            this.payments.add(new pvp.models.Payment(null, amount, paymentType, this));
     }
 
     @Override

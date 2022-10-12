@@ -1,5 +1,8 @@
 package pvp.cashier.controllers;
 
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
@@ -10,6 +13,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import pvp.cashier.models.CardReader;
 import pvp.cashier.models.Order;
 
@@ -17,7 +26,9 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +43,9 @@ import pvp.models.interfaces.Product;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 
 public class CashierController implements Initializable {
@@ -218,7 +232,34 @@ public class CashierController implements Initializable {
     }
 
     @FXML
-    private void payWithCard(ActionEvent event) throws IOException, JAXBException, InterruptedException {
+    private void saveReceipt(ActionEvent event) throws IOException, DocumentException {
+        String date = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss").format(new Date());
+        FileOutputStream fos = new FileOutputStream("../receipts/receipt-" + date + ".pdf");
+
+        com.itextpdf.text.Document doc = new com.itextpdf.text.Document();
+        PdfWriter writer = PdfWriter.getInstance(doc, fos);
+
+        doc.open();
+        //adding paragraphs to the PDF
+        doc.add(new Paragraph("                        HSBC Bank (USA)"));
+        doc.add(new Paragraph("                                       "));
+        doc.add(new Paragraph("Account Holder Name: Rachel Weisz"));
+        doc.add(new Paragraph("Account Number: xxx-xxx-xxx-234"));
+        doc.add(new Paragraph("Branch:  Los Angeles"));
+        doc.add(new Paragraph("Branch Code: 18743"));
+        doc.add(new Paragraph("Mobile Number: +1 (xxxx)-xxx-456"));
+        doc.add(new Paragraph("Address: P.O. Box 1421, PC 111, CPO, New York (USA)"));
+        doc.add(new Paragraph("Debit Card Number: xxxx-xxxx-xxxx-0987"));
+        doc.add(new Paragraph("e-mail: rachel@gmial.com"));
+        doc.add(new Paragraph("Toll Free Number: 18000xxxxx"));
+        //closes the document
+        doc.close();
+        //closes the output stream
+        fos.close();
+    }
+
+    @FXML
+    private void payWithCard(ActionEvent event) throws IOException, JAXBException, InterruptedException, ParserConfigurationException, SAXException {
         HttpURLConnection httpURLConnection = (HttpURLConnection) cradReaderStatusUrl.openConnection();
         httpURLConnection.setRequestMethod("GET");
         httpURLConnection.getResponseCode();
@@ -245,7 +286,8 @@ public class CashierController implements Initializable {
         httpURLConnection.setRequestMethod("POST");
         httpURLConnection.setDoOutput(true);
         OutputStream os = httpURLConnection.getOutputStream();
-        os.write(("amount=" + (this.order.getTotalPrice() + this.order.getTotalPaidAmount())).getBytes());
+        int amountToPay = this.order.getTotalPrice() + this.order.getTotalPaidAmount();
+        os.write(("amount=" + amountToPay).getBytes());
         os.flush();
         os.close();
         httpURLConnection.getResponseCode();
@@ -276,13 +318,25 @@ public class CashierController implements Initializable {
             response.append(inputLine);
         } in .close();
 
-        System.out.println(CardReader.class);
-        JAXBContext jaxbContext = JAXBContext.newInstance(CardReader.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        CardReader responseClass = (CardReader) jaxbUnmarshaller.unmarshal(new StringReader(response.toString()));
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(new InputSource(new StringReader(response.toString())));
+        doc.getDocumentElement().normalize();
+        System.out.println(response.toString());
+        Element result = (Element) doc.getElementsByTagName("result").item(0);
+        // String bonusCardNumber = result.getElementsByTagName("bonusCardNumber").item(0).getTextContent();
+        // String bonusState = result.getElementsByTagName("bonusState").item(0).getTextContent();
+        String paymentCardNumber = result.getElementsByTagName("paymentCardNumber").item(0).getTextContent();
+        // String goodThruMonth = result.getElementsByTagName("goodThruMonth").item(0).getTextContent();
+        // String goodThruYear = result.getElementsByTagName("goodThruYear").item(0).getTextContent();
+        String paymentState = result.getElementsByTagName("paymentState").item(0).getTextContent();
+        String paymentCardType = result.getElementsByTagName("paymentCardType").item(0).getTextContent();
 
-        System.out.println(responseClass);
-
+        if (paymentState.equals("ACCEPTED")) {
+            this.order.createPayment(amountToPay, PaymentType.CARD);
+        }
+        updateOrderLines();
     }
 
     @Override

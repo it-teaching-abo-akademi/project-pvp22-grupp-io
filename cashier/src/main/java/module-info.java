@@ -7,6 +7,7 @@ module pvp.cashier {
     requires jaxb.impl;
 
     requires org.controlsfx.controls;
+    requires itextpdf;
     requires com.dlsc.formsfx;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
