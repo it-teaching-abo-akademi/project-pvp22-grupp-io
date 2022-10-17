@@ -1,14 +1,19 @@
 package pvp.api.order;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import pvp.models.interfaces.User;
-import pvp.models.interfaces.OrderLine;
-import pvp.models.interfaces.Payment;
 
+import pvp.models.interfaces.Payment;
+import pvp.models.interfaces.OrderLine;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
-public class Order extends pvp.models.Order implements Serializable {
+@JsonDeserialize(using=OrderDeserializer.class)
+public class Order extends pvp.models.Order {
     public Order(
             @JsonProperty("pk") Integer pk,
             @JsonProperty("order_total") int order_total,

@@ -2,6 +2,7 @@ package pvp.api.order;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import pvp.models.User;
+import pvp.models.interfaces.Payment;
 import pvp.models.interfaces.Product;
 
 import java.io.Serializable;

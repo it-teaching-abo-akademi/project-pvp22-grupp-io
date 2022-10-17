@@ -15,6 +15,7 @@ import pvp.models.interfaces.User;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,7 +71,8 @@ public class OrderDataAccessService {
         String sql = "" +
                 "INSERT INTO \"order\" (" +
                 " user_id," +
-                " total_price, completed) "+
+                " total_price," +
+                " completed) "+
                 "VALUES (?, ?, ?)";
 
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
@@ -143,9 +145,8 @@ public class OrderDataAccessService {
             if (user_id != null) {
                 user = userService.getUserById(resultSet.getInt("user_id"));
             }
-            Set<OrderLine> orderLines = getOrderLinesByOrderId(pk).stream().collect(Collectors.toSet());
+            Set<pvp.models.interfaces.OrderLine> orderLines = getOrderLinesByOrderId(pk).stream().collect(Collectors.toSet());
             Set<Payment> payments = paymentService.getPaymentsByOrderId(pk).stream().collect(Collectors.toSet());
-
             int total_price = resultSet.getInt("total_price");
             boolean complete = resultSet.getBoolean("complete");
 
