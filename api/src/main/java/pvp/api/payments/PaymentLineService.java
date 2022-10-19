@@ -21,7 +21,7 @@ public class PaymentLineService {
 
     Payment findById(String id) { return paymentLineDataAccessService.getPaymentLineById(id); }
 
-    int addNewPaymentLine(Payment payment) {
+    public int addNewPaymentLine(Payment payment) {
         return paymentLineDataAccessService.insertPaymentLine(payment);
     }
 }

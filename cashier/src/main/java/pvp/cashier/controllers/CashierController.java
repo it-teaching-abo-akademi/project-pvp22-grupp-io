@@ -30,16 +30,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import pvp.models.PaymentType;
+import pvp.models.User;
 import pvp.models.interfaces.OrderLine;
 import pvp.models.interfaces.Payment;
 import pvp.models.interfaces.Product;
@@ -97,25 +95,29 @@ public class CashierController implements Initializable {
     private TableColumn<OrderLine, Integer> priceColumn;
     @FXML
     private TableColumn<OrderLine, Integer> discountColumn;
+    @FXML
+    private TextField amountLeftToPay;
+    @FXML
+    private TextField orderTotal;
 
     private CustomerController customerController;
-    private Order order;
+    private pvp.models.interfaces.Order order;
     private List<Product> searchedProducts = new ArrayList<Product>();
     private List<pvp.models.interfaces.Order> searchedOrders = new ArrayList<pvp.models.interfaces.Order>();
 
 
-    public void setModel(Order model) {
+    public void setModel(pvp.models.interfaces.Order model) {
         order = model;
         customerController.setModel(order);
         updateOrderLines();
     }
 
-    public void setCustomerController(CustomerController customerController){
+    public void setCustomerController(CustomerController customerController) {
         this.customerController = customerController;
     }
 
     @FXML
-    private void newOrder(){
+    private void newOrder() {
         order = new Order();
         customerController.setModel(order);
         updateOrderLines();
@@ -136,7 +138,7 @@ public class CashierController implements Initializable {
         user.accumulate("customerReference", this.order.getUser().getCustomerReference());
         user.accumulate("name", this.order.getUser().getName());
 
-        for (Payment payment: this.order.getPayments() ) {
+        for (Payment payment : this.order.getPayments()) {
             JSONObject jsonPayment = new JSONObject();
             jsonPayment.accumulate("pk", payment.getPk());
             jsonPayment.accumulate("paymentType", payment.getPaymentType());
@@ -144,7 +146,7 @@ public class CashierController implements Initializable {
             payments.add(jsonPayment);
         }
 
-        for (OrderLine orderLine: this.order.getOrderLines()) {
+        for (OrderLine orderLine : this.order.getOrderLines()) {
             JSONObject jsonOrderLine = new JSONObject();
             jsonOrderLine.accumulate("pk", orderLine.getPk());
             jsonOrderLine.accumulate("unitPrice", orderLine.getUnitPrice());
@@ -181,9 +183,10 @@ public class CashierController implements Initializable {
             String inputLine;
             StringBuffer response = new StringBuffer();
 
-            while ((inputLine = in .readLine()) != null) {
+            while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
-            } in .close();
+            }
+            in.close();
 
             JSONArray json = new JSONArray(response.toString());
             if (json.length() == 1) {
@@ -197,8 +200,7 @@ public class CashierController implements Initializable {
                         name,
                         sku
                 ));
-            }
-            else {
+            } else {
                 json.forEach(object -> {
                     JSONObject element = (JSONObject) object;
                     String name = element.optString("name", "");
@@ -219,17 +221,19 @@ public class CashierController implements Initializable {
         }
     }
 
-    protected void addSelectedProduct(Product product){
+    protected void addSelectedProduct(Product product) {
         order.addProduct(product);
         updateOrderLines();
     }
 
-    private void updateOrderLines(){
+    private void updateOrderLines() {
+        amountLeftToPay.setText(String.valueOf(this.order.getTotalPrice() - this.order.getTotalPaidAmount()));
+        orderTotal.setText(String.valueOf(this.order.getTotalPrice()));
         prodTableView.getItems().setAll(this.order.getOrderLines());
         customerController.updateOrderLines();
     }
 
-    private void openProductList() throws IOException{
+    private void openProductList() throws IOException {
         FXMLLoader prodListLoader = new FXMLLoader(getClass().getResource("ProductPopup.fxml"));
         Parent prod = prodListLoader.load();
 
@@ -240,6 +244,64 @@ public class CashierController implements Initializable {
         Stage prodListStage = new Stage();
         prodListStage.setScene(new Scene(prod));
         prodListStage.show();
+    }
+
+    private pvp.models.interfaces.Order deserializeOrder(JSONObject jsonOrder) {
+
+        JSONObject userObject = (JSONObject) jsonOrder.get("user");
+        String name = "";
+        if (!userObject.isNull("name")) {
+            name = userObject.getString("name");
+        }
+        pvp.models.interfaces.User user = new User(
+                userObject.getInt("pk"),
+                UUID.fromString(userObject.getString("customer_reference")),
+                name
+        );
+
+        pvp.models.interfaces.Order order = new Order(
+                jsonOrder.getInt("pk"),
+                jsonOrder.getInt("totalPrice"),
+                new HashSet<OrderLine>(),
+                user,
+                new HashSet<Payment>(),
+                jsonOrder.getBoolean("complete")
+        );
+        JSONArray orderLines = jsonOrder.getJSONArray("order_lines");
+        for (int i = 0; i < orderLines.length(); i++) {
+            JSONObject jsonOrderLine = orderLines.getJSONObject(i);
+            JSONObject jsonProduct = jsonOrderLine.getJSONObject("product");
+            name = "";
+            if (!jsonProduct.isNull("name")) {
+                name = jsonProduct.getString("name");
+            }
+
+            Product product = new pvp.models.Product(
+                    jsonProduct.getInt("pk"),
+                    jsonProduct.getInt("price"),
+                    name,
+                    jsonProduct.getString("sku")
+            );
+            OrderLine orderLine = new pvp.models.OrderLine(
+                    jsonOrderLine.getInt("pk"),
+                    jsonOrderLine.getInt("unitPrice"),
+                    jsonOrderLine.getInt("quantity"),
+                    jsonOrderLine.getInt("totalPrice"),
+                    product
+            );
+            order.addOrderLine(orderLine);
+        }
+        JSONArray jsonPaymentArray = jsonOrder.getJSONArray("payment_lines");
+        for (int i = 0; i < jsonPaymentArray.length(); i++) {
+            JSONObject jsonPayment = jsonPaymentArray.getJSONObject(i);
+            order.createPayment(
+                    jsonPayment.getInt("pk"),
+                    jsonPayment.getInt("amount"),
+                    jsonPayment.getString("payment_type_id")
+            );
+        }
+
+        return order;
     }
 
     @FXML
@@ -262,10 +324,7 @@ public class CashierController implements Initializable {
             JSONArray json = new JSONArray(response.toString());
             json.forEach(object -> {
                 JSONObject element = (JSONObject) object;
-                String name = element.optString("name", "");
-                String sku = element.optString("sku", "");
-
-
+                searchedOrders.add(deserializeOrder(element));
             });
         }
 
@@ -273,8 +332,6 @@ public class CashierController implements Initializable {
         Parent prod = orderListLoader.load();
 
         SavedOrdersPopupController popupController = orderListLoader.getController();
-
-        searchedOrders.add(order);
 
         popupController.setSearchedOrders(searchedOrders);
         popupController.setMainController(this);
@@ -313,12 +370,12 @@ public class CashierController implements Initializable {
             int totalPrice = this.order.getTotalPrice();
             int paidAmount = this.order.getTotalPaidAmount();
             int totalLeftToPay = totalPrice - paidAmount;
-
             if (totalLeftToPay >= amount) {
                 this.order.createPayment(amount, PaymentType.CASH);
             } else {
                 this.order.createPayment(totalLeftToPay, PaymentType.CASH);
                 amountToCustomer.setText(String.valueOf(amount - totalLeftToPay));
+                saveOrder(event);
             }
             updateOrderLines();
         } catch (NumberFormatException e){}
@@ -391,19 +448,21 @@ public class CashierController implements Initializable {
             httpURLConnection = (HttpURLConnection) cradReaderAbortUrl.openConnection();
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.getResponseCode();
-            payWithCash(event);
+            payWithCard(event);
+            return;
         } else if (response.toString().equals("DONE")) {
             httpURLConnection = (HttpURLConnection) cradReaderResetUrl.openConnection();
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.getResponseCode();
-            payWithCash(event);
+            payWithCard(event);
+            return;
         }
 
         httpURLConnection = (HttpURLConnection) cradReaderStartUrl.openConnection();
         httpURLConnection.setRequestMethod("POST");
         httpURLConnection.setDoOutput(true);
         OutputStream os = httpURLConnection.getOutputStream();
-        int amountToPay = this.order.getTotalPrice() + this.order.getTotalPaidAmount();
+        int amountToPay = this.order.getTotalPrice() - this.order.getTotalPaidAmount();
         os.write(("amount=" + amountToPay).getBytes());
         os.flush();
         os.close();
@@ -456,6 +515,7 @@ public class CashierController implements Initializable {
         if (paymentState.equals("ACCEPTED")) {
             this.order.createPayment(amountToPay, PaymentType.CARD);
         }
+        saveOrder(event);
         updateOrderLines();
     }
 

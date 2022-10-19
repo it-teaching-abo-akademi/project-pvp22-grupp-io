@@ -161,4 +161,9 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
     public void createPayment(int amount, String paymentType) {
         this.payments.add(new pvp.models.Payment(null, amount, paymentType, this));
     }
+
+    @Override
+    public void createPayment(Integer pk, int amount, String paymentType) {
+        this.payments.add(new pvp.models.Payment(pk, amount, paymentType, this));
+    }
 }
