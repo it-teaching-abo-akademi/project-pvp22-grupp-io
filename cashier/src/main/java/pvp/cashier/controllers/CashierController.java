@@ -56,22 +56,22 @@ public class CashierController implements Initializable {
 
     private static final URL cashBoxStatusUrl;
     private static final URL cashBoxOpenUrl;
-    private static final URL cradReaderStatusUrl;
-    private static final URL cradReaderResultUrl;
-    private static final URL cradReaderResetUrl;
-    private static final URL cradReaderAbortUrl;
-    private static final URL cradReaderStartUrl;
+    private static final URL cardReaderStatusUrl;
+    private static final URL cardReaderResultUrl;
+    private static final URL cardReaderResetUrl;
+    private static final URL cardReaderAbortUrl;
+    private static final URL cardReaderStartUrl;
 
 
     static {
         try {
             cashBoxStatusUrl = new URL("http://localhost:9001/cashbox/status");
             cashBoxOpenUrl = new URL("http://localhost:9001/cashbox/open");
-            cradReaderResultUrl = new URL("http://localhost:9002/cardreader/result");
-            cradReaderResetUrl = new URL("http://localhost:9002/cardreader/reset");
-            cradReaderStatusUrl = new URL("http://localhost:9002/cardreader/status");
-            cradReaderAbortUrl = new URL("http://localhost:9002/cardreader/abort");
-            cradReaderStartUrl = new URL("http://localhost:9002/cardreader/waitForPayment");
+            cardReaderResultUrl = new URL("http://localhost:9002/cardreader/result");
+            cardReaderResetUrl = new URL("http://localhost:9002/cardreader/reset");
+            cardReaderStatusUrl = new URL("http://localhost:9002/cardreader/status");
+            cardReaderAbortUrl = new URL("http://localhost:9002/cardreader/abort");
+            cardReaderStartUrl = new URL("http://localhost:9002/cardreader/waitForPayment");
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -97,6 +97,8 @@ public class CashierController implements Initializable {
     private TableColumn<OrderLine, Integer> priceColumn;
     @FXML
     private TableColumn<OrderLine, Integer> discountColumn;
+    @FXML
+    private TextField discountAmount;
 
     private CustomerController customerController;
     private Order order;
@@ -377,7 +379,7 @@ public class CashierController implements Initializable {
 
     @FXML
     private void payWithCard(ActionEvent event) throws IOException, JAXBException, InterruptedException, ParserConfigurationException, SAXException {
-        HttpURLConnection httpURLConnection = (HttpURLConnection) cradReaderStatusUrl.openConnection();
+        HttpURLConnection httpURLConnection = (HttpURLConnection) cardReaderStatusUrl.openConnection();
         httpURLConnection.setRequestMethod("GET");
         httpURLConnection.getResponseCode();
         BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
@@ -388,18 +390,18 @@ public class CashierController implements Initializable {
             response.append(inputLine);
         } in .close();
         if (response.toString().equals("WAITING_FOR_PAYMENT")) {
-            httpURLConnection = (HttpURLConnection) cradReaderAbortUrl.openConnection();
+            httpURLConnection = (HttpURLConnection) cardReaderAbortUrl.openConnection();
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.getResponseCode();
             payWithCash(event);
         } else if (response.toString().equals("DONE")) {
-            httpURLConnection = (HttpURLConnection) cradReaderResetUrl.openConnection();
+            httpURLConnection = (HttpURLConnection) cardReaderResetUrl.openConnection();
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.getResponseCode();
             payWithCash(event);
         }
 
-        httpURLConnection = (HttpURLConnection) cradReaderStartUrl.openConnection();
+        httpURLConnection = (HttpURLConnection) cardReaderStartUrl.openConnection();
         httpURLConnection.setRequestMethod("POST");
         httpURLConnection.setDoOutput(true);
         OutputStream os = httpURLConnection.getOutputStream();
@@ -410,7 +412,7 @@ public class CashierController implements Initializable {
         httpURLConnection.getResponseCode();
 
         while (true) {
-            httpURLConnection = (HttpURLConnection) cradReaderStatusUrl.openConnection();
+            httpURLConnection = (HttpURLConnection) cardReaderStatusUrl.openConnection();
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.getResponseCode();
             in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
@@ -428,7 +430,7 @@ public class CashierController implements Initializable {
             TimeUnit.SECONDS.sleep(1);
         }
 
-        httpURLConnection = (HttpURLConnection) cradReaderResultUrl.openConnection();
+        httpURLConnection = (HttpURLConnection) cardReaderResultUrl.openConnection();
         httpURLConnection.setRequestMethod("GET");
         in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
         response = new StringBuffer();
@@ -498,6 +500,21 @@ public class CashierController implements Initializable {
                             .otherwise((ContextMenu)null));
             return row;
         });
+
+    }
+
+    @FXML
+    public void addDiscount(ActionEvent actionEvent) {
+        String discountString = discountAmount.getText();
+        int amount = Integer.parseInt(discountString);
+        OrderLine itemToDiscount = prodTableView.getSelectionModel().getSelectedItem();
+        int currentPrice = itemToDiscount.getUnitPrice();
+        //double newPrice = currentPrice*(1-(amount*0.01));
+        int newPrice = currentPrice-amount;
+        itemToDiscount.setUnitPrice(newPrice);
+        itemToDiscount.calculatePrice();
+
+        updateOrderLines();
 
     }
 }
