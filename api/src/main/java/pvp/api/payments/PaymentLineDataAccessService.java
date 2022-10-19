@@ -63,6 +63,7 @@ public class PaymentLineDataAccessService {
                     payment.getOrderId()
             );
         } catch (Exception e) {
+            System.out.println(e);
             String createPaymentTypesSql = "" +
                     "INSERT INTO payment_type (" +
                     " name," +
@@ -98,7 +99,7 @@ public class PaymentLineDataAccessService {
     private RowMapper<Payment> mapPaymentsFomDb() {
         return (resultSet, i) -> {
             Integer pk = resultSet.getInt("id");
-            int amount = resultSet.getInt("price");
+            int amount = resultSet.getInt("amount");
             int paymentTypeId = resultSet.getInt("payment_type_id");
             String paymentTypeName = PaymentType.values()[paymentTypeId].name();
             int order_id = resultSet.getInt("order_id");

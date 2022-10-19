@@ -15,7 +15,6 @@ public class Payment extends PkModel implements pvp.models.interfaces.Payment {
         this.amount = amount;
         this.paymentType = paymentType;
         this.order = order;
-        this.orderId = order.getPk();
     }
 
     public Payment (Integer pk, int amount, String paymentType, Order order) {
@@ -23,7 +22,6 @@ public class Payment extends PkModel implements pvp.models.interfaces.Payment {
         this.amount = amount;
         this.paymentType = PaymentType.valueOf(paymentType);
         this.order = order;
-        this.orderId = order.getPk();
     }
     public Payment (Integer pk, int amount, PaymentType paymentType, int orderId) {
         super(pk);
@@ -38,7 +36,8 @@ public class Payment extends PkModel implements pvp.models.interfaces.Payment {
         this.orderId = orderId;
     }
 
-
+@Override
+public String toString() { return "amount: " + this.amount + "Type: " + this.paymentType; }
     @Override
     public PaymentType getPaymentType() {
         return this.paymentType;
@@ -71,9 +70,11 @@ public class Payment extends PkModel implements pvp.models.interfaces.Payment {
 
     @Override
     public int getOrderId() {
-        if (this.order != null) {
-            return this.order.getPk();
-        }
+        try {
+            if (this.order != null) {
+                return this.order.getPk();
+            }
+        } catch (Exception e) {}
         return this.orderId;
     }
 

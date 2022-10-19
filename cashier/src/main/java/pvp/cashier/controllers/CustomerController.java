@@ -6,7 +6,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import pvp.cashier.models.Order;
+import pvp.models.interfaces.Order;
 import pvp.models.interfaces.OrderLine;
 import pvp.models.interfaces.Product;
 
@@ -29,7 +29,7 @@ public class CustomerController implements Initializable {
     private TextField orderTotal;
     @FXML
     private TextField leftToPay;
-    private Order order;
+    private pvp.models.interfaces.Order order;
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
         amountColumn.setCellValueFactory(param -> {
@@ -60,8 +60,6 @@ public class CustomerController implements Initializable {
     public void updateOrderLines(){
         customerProdView.getItems().setAll(this.order.getOrderLines());
         orderTotal.setText(String.valueOf(this.order.getTotalPrice()));
-        System.out.println(this.order.getTotalPrice());
-        System.out.println(this.order.getTotalPaidAmount());
         leftToPay.setText(String.valueOf(this.order.getTotalPrice() - this.order.getTotalPaidAmount()));
     }
 }

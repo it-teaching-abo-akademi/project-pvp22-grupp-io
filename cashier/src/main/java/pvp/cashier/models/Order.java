@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import javafx.collections.ObservableSet;
@@ -19,7 +20,27 @@ import pvp.models.interfaces.Product;
 public class Order extends pvp.models.Order implements Serializable {
 
     public Order() {
-        super(1, 10, new HashSet<OrderLine>(), new User(1, UUID.randomUUID(), "Test user"), new HashSet<Payment>(), false);
+        super(null,
+                0,
+                new HashSet<OrderLine>(),
+                new User(1, UUID.randomUUID(), "Test user"),
+                new HashSet<Payment>(),
+                false);
+    }
+
+    public Order(Integer pk,
+                 Integer price,
+                 Set<OrderLine> orderLines,
+                 pvp.models.interfaces.User user,
+                 Set<Payment> payments,
+                 boolean complete) {
+        super(pk,
+                price,
+                orderLines,
+                user,
+                payments,
+                complete
+        );
     }
 
 }

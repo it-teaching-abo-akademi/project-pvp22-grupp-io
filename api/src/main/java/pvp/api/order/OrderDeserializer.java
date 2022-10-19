@@ -48,33 +48,44 @@ public class OrderDeserializer extends StdDeserializer<Order> {
             ));
         });
         Set<Payment> paymentNodeSet = new HashSet<Payment>();
+
+        JsonNode user = node.get("user");
+        JsonNode orderPkNode = node.get("pk");
+        Integer orderPk = null;
+        if (orderPkNode != null) {
+            orderPk = orderPkNode.asInt();
+        }
+        Order order = new pvp.api.order.Order(
+                orderPk,
+                node.get("order_total").asInt(),
+                orderLineSet,
+                new User(
+                        user.get("pk").asInt(),
+                        UUID.fromString(user.get("customerReference").asText()),
+                        user.get("name").asText()
+                ),
+                paymentNodeSet, node.get("complete").asBoolean());
+
+        System.out.println(paymentNode);
         paymentNode.elements().forEachRemaining(payments ->{
             JsonNode pkNode = payments.get("pk");
             Integer pk = null;
             if (pkNode != null) {
                 pk = pkNode.asInt();
             }
-            paymentNodeSet.add(new pvp.api.payments.Payment(
+            JsonNode orderIdNode = payments.get("order_id");
+            Integer orderId = null;
+            if (orderIdNode != null) {
+                orderId = orderIdNode.asInt();
+            }
+            order.createPayment(
                     pk,
                     payments.get("amount").asInt(),
-                    payments.get("order_id").asInt(),
-                    payments.get("payment_type_id").asText()
-            ));
+                    payments.get("paymentType").asText()
+            );
         });
+        System.out.println(order.getTotalPaidAmount());
 
-        JsonNode user = node.get("user");
-        System.out.println(node.toString());
-        System.out.println(user.get("customerReference").toString());
-        Order order = new pvp.api.order.Order(
-                node.get("pk").asInt(),
-                node.get("order_total").asInt(),
-                orderLineSet,
-                new User(
-                    user.get("pk").asInt(),
-                    UUID.fromString(user.get("customerReference").asText()),
-                    user.get("name").asText()
-                ),
-                paymentNodeSet, node.get("complete").asBoolean());
         return order;
     }
 }

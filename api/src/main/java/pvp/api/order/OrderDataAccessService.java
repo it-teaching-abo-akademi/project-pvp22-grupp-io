@@ -148,7 +148,7 @@ public class OrderDataAccessService {
             Set<pvp.models.interfaces.OrderLine> orderLines = getOrderLinesByOrderId(pk).stream().collect(Collectors.toSet());
             Set<Payment> payments = paymentService.getPaymentsByOrderId(pk).stream().collect(Collectors.toSet());
             int total_price = resultSet.getInt("total_price");
-            boolean complete = resultSet.getBoolean("complete");
+            boolean complete = resultSet.getBoolean("completed");
 
             return new Order(
                     pk,

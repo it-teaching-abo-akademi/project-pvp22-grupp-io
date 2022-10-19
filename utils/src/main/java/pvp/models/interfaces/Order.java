@@ -19,6 +19,8 @@ public interface Order extends PkModel {
 
     public boolean isComplete();
 
+    public Set<Payment> getPayments();
+
     public void setIsComplete(boolean isComplete);
 
     public void addOrderLine(OrderLine orderLine);
@@ -42,4 +44,5 @@ public interface Order extends PkModel {
     public void createPayment(int amount, PaymentType paymentType);
 
     public void createPayment(int amount, String paymentType);
+    public void createPayment(Integer pk, int amount, String paymentType);
 }

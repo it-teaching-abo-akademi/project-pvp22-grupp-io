@@ -11,10 +11,11 @@ import pvp.cashier.models.Order;
 
 public class POSApplication extends Application {
 
+    private pvp.models.interfaces.Order order = new Order();
+
     @Override
     public void start(Stage cashierStage) throws Exception{
         Stage customerStage = new Stage();
-        Order model = new Order();
 
         FXMLLoader CustomerLoader = new FXMLLoader(getClass().getResource("Customer.fxml"));
         Parent customer = CustomerLoader.load();
@@ -24,7 +25,7 @@ public class POSApplication extends Application {
         Parent cashier = CashierLoader.load();
         CashierController cashierController = CashierLoader.getController();
         cashierController.setCustomerController(Customercontroller);
-        cashierController.setModel(model);
+        cashierController.setModel(this.order);
 
         cashierStage.setScene(new Scene(cashier));
         customerStage.setScene(new Scene(customer));

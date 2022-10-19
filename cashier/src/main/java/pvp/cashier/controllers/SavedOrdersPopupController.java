@@ -1,5 +1,6 @@
 package pvp.cashier.controllers;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -14,6 +15,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import pvp.models.interfaces.Order;
+import pvp.models.interfaces.OrderLine;
 
 import java.net.URL;
 import java.util.List;
@@ -27,7 +29,7 @@ public class SavedOrdersPopupController implements Initializable {
     @FXML
     private TableColumn paymentsColumn;
     @FXML
-    private TableColumn userIdColumn;
+    private TableColumn<Order, String> userIdColumn;
     @FXML
     private Label orderLabel;
     private int currentOrder;
@@ -52,7 +54,7 @@ public class SavedOrdersPopupController implements Initializable {
     public void accept(ActionEvent event) {
         Order selectedOrder = orderTableView.getSelectionModel().getSelectedItem();
         if (selectedOrder != null) {
-            //this.mainController.addSelectedOrder(selectedOrder);
+            this.cashierController.setModel(selectedOrder);
             Stage stage = (Stage) anchorPane.getScene().getWindow();
             stage.close();
         }
@@ -66,7 +68,11 @@ public class SavedOrdersPopupController implements Initializable {
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
         productsColumn.setCellValueFactory(new PropertyValueFactory<>("orderLines" ));
         paymentsColumn.setCellValueFactory(new PropertyValueFactory<>("payments" ));
-        userIdColumn.setCellValueFactory(new PropertyValueFactory<>("userID" ));
+        userIdColumn.setCellValueFactory(param -> {
+            String name = param.getValue().getUser().getCustomerReference().toString();
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(name);
+            return q;
+        });
     }
 
     @Override
