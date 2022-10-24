@@ -30,7 +30,7 @@ import java.util.List;
 public class AdminController implements Initializable {
 
     @FXML
-    public TableView productView;
+    public TableView<Product> productView;
     @FXML
     private TextField ageInput;
     @FXML
@@ -115,6 +115,8 @@ public class AdminController implements Initializable {
         productToEdit.setUnitPrice(amount);
          */
     }
+
+
 
     public void limitTime(ActionEvent actionEvent) {
     }

@@ -92,9 +92,9 @@ public class CashierController implements Initializable {
     @FXML
     private TableColumn<OrderLine, Integer> amountColumn;
     @FXML
-    private TableColumn<OrderLine, Integer> priceColumn;
+    private TableColumn<OrderLine, String> priceColumn;
     @FXML
-    private TableColumn<OrderLine, Integer> discountColumn;
+    private TableColumn<OrderLine, String> discountColumn;
     @FXML
     private TextField discountAmount;
     @FXML
@@ -229,8 +229,8 @@ public class CashierController implements Initializable {
     }
 
     private void updateOrderLines() {
-        amountLeftToPay.setText(String.valueOf(this.order.getTotalPrice() - this.order.getTotalPaidAmount()));
-        orderTotal.setText(String.valueOf(this.order.getTotalPrice()));
+        amountLeftToPay.setText(String.valueOf((this.order.getTotalPrice() - this.order.getTotalPaidAmount()) * 0.0100) + "€");
+        orderTotal.setText(String.valueOf(this.order.getTotalPrice() * 0.0100) + "€");
         prodTableView.getItems().setAll(this.order.getOrderLines());
         customerController.updateOrderLines();
     }
@@ -376,7 +376,7 @@ public class CashierController implements Initializable {
                 this.order.createPayment(amount, PaymentType.CASH);
             } else {
                 this.order.createPayment(totalLeftToPay, PaymentType.CASH);
-                amountToCustomer.setText(String.valueOf(amount - totalLeftToPay));
+                amountToCustomer.setText(String.valueOf((amount - totalLeftToPay))+ "€");
                 saveOrder(event);
             }
             updateOrderLines();
@@ -528,13 +528,13 @@ public class CashierController implements Initializable {
             return q;
         });
         priceColumn.setCellValueFactory(param -> {
-            ObservableValue<Integer> q = new ReadOnlyObjectWrapper<Integer>(param.getValue().getTotalPrice());
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(Double.toString((param.getValue().getTotalPrice()) *.010) + "€");
             return q;
         });
         discountColumn.setCellValueFactory(param -> {
             OrderLine orderline = param.getValue();
             Product product = orderline.getProduct();
-            ObservableValue<Integer> q = new ReadOnlyObjectWrapper<Integer>(product.getPrice() * orderline.getQuantity() - orderline.getTotalPrice());
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(Double.toString((product.getPrice() * orderline.getQuantity() - orderline.getTotalPrice())*0.010) + "€");
             return q;
         });
         NameColumn.setCellValueFactory(param -> {
@@ -566,14 +566,14 @@ public class CashierController implements Initializable {
     @FXML
     public void addDiscount(ActionEvent actionEvent) {
         String discountString = discountAmount.getText();
-        int amount = Integer.parseInt(discountString);
+        int amount = Integer.parseInt(discountString)*100;
         OrderLine itemToDiscount = prodTableView.getSelectionModel().getSelectedItem();
         int currentPrice = itemToDiscount.getUnitPrice();
         //double newPrice = currentPrice*(1-(amount*0.01));
         int newPrice = currentPrice-amount;
         itemToDiscount.setUnitPrice(newPrice);
         itemToDiscount.calculatePrice();
-
+        order.updateTotalPrice();
         updateOrderLines();
 
     }

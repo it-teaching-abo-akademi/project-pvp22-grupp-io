@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pvp.cashier.controllers.AdminController">
+<AnchorPane prefHeight="456.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pvp.cashier.controllers.AdminController">
    <children>
       <TableView fx:id="productView" prefHeight="270.0" prefWidth="600.0">
         <columns>
@@ -19,13 +19,15 @@
         </columns>
       </TableView>
       <TextField fx:id="timeInput" layoutX="23.0" layoutY="286.0" promptText="Time period" />
-      <Button layoutX="76.0" layoutY="338.0" mnemonicParsing="false" onAction="#limitTime" text="Limit" />
+      <Button layoutX="22.0" layoutY="313.0" mnemonicParsing="false" onAction="#limitTime" prefHeight="26.0" prefWidth="150.0" text="Limit" />
       <TextField fx:id="ageInput" layoutX="205.0" layoutY="286.0" promptText="Customer age" />
-      <Button layoutX="259.0" layoutY="338.0" mnemonicParsing="false" onAction="#limitAge" text="Limit" />
+      <Button layoutX="204.0" layoutY="313.0" mnemonicParsing="false" onAction="#limitAge" prefHeight="26.0" prefWidth="150.0" text="Limit" />
       <Button layoutX="395.0" layoutY="286.0" mnemonicParsing="false" onAction="#limitMale" text="Male" />
       <Button layoutX="531.0" layoutY="286.0" mnemonicParsing="false" onAction="#limitSexBoth" text="Both" />
       <Button layoutX="459.0" layoutY="286.0" mnemonicParsing="false" onAction="#limitFemale" text="Female" />
       <TextField fx:id="newPriceInput" layoutX="412.0" layoutY="326.0" promptText="New price" />
       <Button layoutX="443.0" layoutY="363.0" mnemonicParsing="false" onAction="#editPrice" text="Set new price" />
+      <TextField fx:id="timeInput1" layoutX="52.0" layoutY="362.0" prefHeight="26.0" prefWidth="239.0" promptText="Customer name/number" />
+      <Button layoutX="52.0" layoutY="389.0" mnemonicParsing="false" onAction="#limitTime" prefHeight="26.0" prefWidth="239.0" text="Search products bought by customer" />
    </children>
 </AnchorPane>

@@ -22,9 +22,9 @@ public class CustomerController implements Initializable {
     @FXML
     private TableColumn<OrderLine, Integer> amountColumn;
     @FXML
-    private TableColumn<OrderLine, Integer> priceColumn;
+    private TableColumn<OrderLine, String> priceColumn;
     @FXML
-    private TableColumn<OrderLine, Integer> discountColumn;
+    private TableColumn<OrderLine, String> discountColumn;
     @FXML
     private TextField orderTotal;
     @FXML
@@ -37,13 +37,14 @@ public class CustomerController implements Initializable {
             return q;
         });
         priceColumn.setCellValueFactory(param -> {
-            ObservableValue<Integer> q = new ReadOnlyObjectWrapper<Integer>(param.getValue().getTotalPrice());
-            return q;
-        });
+                    ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(Double.toString((param.getValue().getTotalPrice()) * .010) + "€");
+                    return q;
+                });
+
         discountColumn.setCellValueFactory(param -> {
             OrderLine orderline = param.getValue();
             Product product = orderline.getProduct();
-            ObservableValue<Integer> q = new ReadOnlyObjectWrapper<Integer>(product.getPrice() * orderline.getQuantity() - orderline.getTotalPrice());
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(Double.toString((product.getPrice() * orderline.getQuantity() - orderline.getTotalPrice())*0.010) + "€");
             return q;
         });
         nameColumn.setCellValueFactory(param -> {
@@ -59,7 +60,7 @@ public class CustomerController implements Initializable {
 
     public void updateOrderLines(){
         customerProdView.getItems().setAll(this.order.getOrderLines());
-        orderTotal.setText(String.valueOf(this.order.getTotalPrice()));
-        leftToPay.setText(String.valueOf(this.order.getTotalPrice() - this.order.getTotalPaidAmount()));
+        orderTotal.setText(String.valueOf(this.order.getTotalPrice() * 0.0100) + "€");
+        leftToPay.setText(String.valueOf((this.order.getTotalPrice() - this.order.getTotalPaidAmount()) * 0.0100) + "€");
     }
 }
