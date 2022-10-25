@@ -19,16 +19,16 @@ public class ProductDataAccessService {
 
     List<Product> selectAllProducts() {
         String sql = "" +
-                "SELECT * " +
-                "FROM product";
+                "SELECT p.*, (select count(*) from order_line r where r.product_id = p.id) sold_count " +
+                "FROM product p";
 
         return jdbcTemplate.query(sql, mapProductsFomDb());
     }
 
     Product getProductBySku(String sku) {
         String sql = "" +
-                "SELECT *" +
-                "FROM product " +
+                "SELECT p.*, (select count(*) from order_line r where r.product_id = p.id) sold_count " +
+                "FROM product p " +
                 "WHERE sku = '" + sku + "'";
         List<Product> products = jdbcTemplate.query(sql, mapProductsFomDb());
         if (products.size() > 0) {
@@ -39,8 +39,8 @@ public class ProductDataAccessService {
 
     public Product getProductById(int id) {
         String sql = "" +
-                "SELECT *" +
-                "FROM product " +
+                "SELECT p.*, (select count(*) from order_line r where r.product_id = p.id) sold_count " +
+                "FROM product p " +
                 "WHERE id = '" + id + "'";
         List<Product> products = jdbcTemplate.query(sql, mapProductsFomDb());
         if (products.size() > 0) {
@@ -51,8 +51,8 @@ public class ProductDataAccessService {
 
     public List<Product> selectAllProductsBySearch(String search) {
         String sql = "" +
-                "SELECT * " +
-                "FROM product " +
+                "SELECT p.*, (select count(*) from order_line r where r.product_id = p.id) sold_count " +
+                "FROM product p " +
                 "WHERE name ILIKE '%" + search + "%' OR " +
                 "sku ILIKE '%" + search + "%'";
 
@@ -92,12 +92,14 @@ public class ProductDataAccessService {
             int pk = resultSet.getInt("id");
             int price = resultSet.getInt("price");
             String name = resultSet.getString("name");
+            Integer soldCount = resultSet.getInt("sold_count");
 
             return new Product(
                     pk,
                     sku,
                     price,
-                    name
+                    name,
+                    soldCount
             );
         };
     }

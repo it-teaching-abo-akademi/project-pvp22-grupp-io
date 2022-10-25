@@ -199,7 +199,8 @@ public class CashierController implements Initializable {
                         element.getInt("pk"),
                         element.getInt("price"),
                         name,
-                        sku
+                        sku,
+                        element.getInt("sold_count")
                 ));
             } else {
                 json.forEach(object -> {
@@ -211,7 +212,8 @@ public class CashierController implements Initializable {
                             element.getInt("pk"),
                             element.getInt("price"),
                             name,
-                            sku
+                            sku,
+                            element.getInt("sold_count")
                     ));
                 });
                 openProductList();
@@ -283,7 +285,8 @@ public class CashierController implements Initializable {
                     jsonProduct.getInt("pk"),
                     jsonProduct.getInt("price"),
                     name,
-                    jsonProduct.getString("sku")
+                    jsonProduct.getString("sku"),
+                    jsonProduct.getInt("sold_count")
             );
             OrderLine orderLine = new pvp.models.OrderLine(
                     jsonOrderLine.getInt("pk"),

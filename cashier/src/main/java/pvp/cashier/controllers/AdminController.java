@@ -97,8 +97,8 @@ public class AdminController implements Initializable {
             in.close();
 
             JSONArray json = new JSONArray(response.toString());
-            if (json.length() == 1) {
-                JSONObject element = (JSONObject) json.get(0);
+            json.forEach(object -> {
+                JSONObject element = (JSONObject) object;
                 String name = element.optString("name", "");
                 String sku = element.optString("sku", "");
 
@@ -110,7 +110,7 @@ public class AdminController implements Initializable {
                         element.getInt("sold_count")
                 ));
                 productView.getItems().setAll(productArrayList);
-            }
+            });
         }
     }
 

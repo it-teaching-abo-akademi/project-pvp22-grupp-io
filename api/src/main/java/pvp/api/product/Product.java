@@ -10,8 +10,9 @@ public class Product extends pvp.models.Product implements Serializable {
             @JsonProperty("pk") Integer pk,
             @JsonProperty("sku") String sku,
             @JsonProperty("price") int price,
-            @JsonProperty("name") String name
+            @JsonProperty("name") String name,
+            @JsonProperty("sold_count") Integer sold_count
     ) {
-        super(pk, price, name, sku);
+        super(pk, price, name, sku, sold_count);
     }
 }
