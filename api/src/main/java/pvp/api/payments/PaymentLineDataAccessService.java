@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import pvp.models.PaymentType;
 import pvp.models.interfaces.Payment;
+import pvp.models.PaymentType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +28,7 @@ public class PaymentLineDataAccessService {
         return jdbcTemplate.query(sql, mapPaymentsFomDb());
     }
 
-    Payment getPaymentLineById(String id) {
+    Payment getPaymentLineById(int id) {
         String sql = "" +
                 "SELECT *" +
                 "FROM payment " +
@@ -48,35 +48,57 @@ public class PaymentLineDataAccessService {
         return jdbcTemplate.query(sql, mapPaymentsFomDb());
     }
 
-    int insertPaymentLine(Payment payment) {
+    private void ensurePaymentTypes(PaymentType paymentType) {
+        String createPaymentTypesSql = "" +
+            "INSERT INTO payment_type (" +
+            " name," +
+            " id) " +
+            "VALUES (?, ?)";
         try {
-            String sql = "" +
-                    "INSERT INTO payment (" +
-                    " amount," +
-                    " payment_type_id, " +
-                    " order_id) " +
-                    "VALUES (?, ?, ?)";
-            return jdbcTemplate.update(
-                    sql,
-                    payment.getAmount(),
-                    payment.getPaymentTypeAsId(),
-                    payment.getOrderId()
+            jdbcTemplate.update(
+                    createPaymentTypesSql,
+                    paymentType.name(),
+                    paymentType.ordinal()
             );
         } catch (Exception e) {
-            System.out.println(e);
-            String createPaymentTypesSql = "" +
-                    "INSERT INTO payment_type (" +
-                    " name," +
-                    " id) " +
-                    "VALUES (?, ?)";
+            String updatePaymentTypeSql = "" +
+                "UPDATE payment_type " +
+                "SET name = '" + paymentType.name() + "' " +
+                "WHERE id = " + paymentType.ordinal();
+            jdbcTemplate.update(updatePaymentTypeSql);
+        }
+    }
+
+    int insertPaymentLine(Payment payment) {
+        try {
+            Payment dbPayment = this.getPaymentLineById(payment.getPk());
+            if (dbPayment == null ) {
+                String sql = "" +
+                        "INSERT INTO payment (" +
+                        " amount," +
+                        " payment_type_id, " +
+                        " order_id) " +
+                        "VALUES (?, ?, ?)";
+                return jdbcTemplate.update(
+                        sql,
+                        payment.getAmount(),
+                        payment.getPaymentTypeAsId(),
+                        payment.getOrderId()
+                );
+            } else {
+                String sql = "" +
+                    "UPDATE payment " +
+                    "SET amount = '" + payment.getAmount() + "', " +
+                    "payment_type_id = '" + payment.getPaymentTypeAsId() + "', " +
+                    "order_id = '" + payment.getOrderId() + "' " +
+                    "WHERE id = " + payment.getPk();
+                return jdbcTemplate.update(sql);
+            }
+        } catch (Exception e) {
             Arrays.stream(pvp.models.PaymentType.values()).forEach(
-                    paymentType -> {
-                        jdbcTemplate.update(
-                                createPaymentTypesSql,
-                                paymentType.name(),
-                                paymentType.ordinal()
-                        );
-                    }
+                paymentType -> {
+                    ensurePaymentTypes(paymentType);
+                }
             );
         }
         return this.insertPaymentLine(payment, true);

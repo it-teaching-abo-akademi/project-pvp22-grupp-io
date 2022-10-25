@@ -2,8 +2,8 @@ package pvp.api.payments;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import pvp.models.interfaces.Payment;
+
 import java.util.List;
 
 @Service
@@ -19,7 +19,7 @@ public class PaymentLineService {
         return paymentLineDataAccessService.selectAllPaymentLines();
     }
 
-    Payment findById(String id) { return paymentLineDataAccessService.getPaymentLineById(id); }
+    Payment findById(int id) { return paymentLineDataAccessService.getPaymentLineById(id); }
 
     public int addNewPaymentLine(Payment payment) {
         return paymentLineDataAccessService.insertPaymentLine(payment);

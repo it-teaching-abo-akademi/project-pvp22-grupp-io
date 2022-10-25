@@ -68,28 +68,47 @@ public class OrderDataAccessService {
     }
 
     int insertOrder(Order order) {
-        String sql = "" +
-                "INSERT INTO \"order\" (" +
-                " user_id," +
-                " total_price," +
-                " completed) "+
-                "VALUES (?, ?, ?)";
+        Order dbOrder = this.getOrderById(order.getPk());
 
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        int returnValue = jdbcTemplate.update(conn -> {
-                    PreparedStatement preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        if (dbOrder == null) {
+            String sql = "" +
+                    "INSERT INTO \"order\" (" +
+                    " user_id," +
+                    " total_price," +
+                    " completed) "+
+                    "VALUES (?, ?, ?)";
 
-                    // Set parameters
-                    preparedStatement.setInt(1, order.getUserId());
-                    preparedStatement.setInt(2, order.getTotalPrice());
-                    preparedStatement.setBoolean(3, order.isComplete());
+            int returnValue = jdbcTemplate.update(conn -> {
+                        PreparedStatement preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-                    return preparedStatement;
+                        // Set parameters
+                        preparedStatement.setInt(1, order.getUserId());
+                        preparedStatement.setInt(2, order.getTotalPrice());
+                        preparedStatement.setBoolean(3, order.isComplete());
 
-                }, generatedKeyHolder
-        );
+                        return preparedStatement;
+
+                    }, generatedKeyHolder
+            );
+        } else {
+            String sql = "" +
+                    "UPDATE \"order\"" +
+                    " SET user_id = " + order.getUserId() + "," +
+                    " total_price = " + order.getTotalPrice() + "," +
+                    " completed = " + order.isComplete() + " " +
+                    "WHERE id = " + order.getPk();
+
+            int returnValue = jdbcTemplate.update(conn -> {
+                        PreparedStatement preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                        return preparedStatement;
+                    }, generatedKeyHolder
+            );
+        }
         List<Map<String, Object>> keys = generatedKeyHolder.getKeyList();
         int orderId = (int) keys.get(0).get("id");
+
+        jdbcTemplate.update("DELETE FROM order_line WHERE order_id = " + orderId + ";");
 
         String orderLineSql = "INSERT INTO order_line (" +
                 " total_price, " +

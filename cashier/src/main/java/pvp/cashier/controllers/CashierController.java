@@ -170,7 +170,6 @@ public class CashierController implements Initializable {
         os.write(json.toString().getBytes());
         os.flush();
         os.close();
-        System.out.println(httpURLConnection.getResponseCode());
     }
 
     @FXML
@@ -485,7 +484,6 @@ public class CashierController implements Initializable {
                 break;
             }
             cardStatus.setText(response.toString());
-            System.out.println(response.toString());
             TimeUnit.SECONDS.sleep(1);
         }
 
@@ -503,7 +501,6 @@ public class CashierController implements Initializable {
         builder = factory.newDocumentBuilder();
         Document doc = builder.parse(new InputSource(new StringReader(response.toString())));
         doc.getDocumentElement().normalize();
-        System.out.println(response.toString());
         Element result = (Element) doc.getElementsByTagName("result").item(0);
         // String bonusCardNumber = result.getElementsByTagName("bonusCardNumber").item(0).getTextContent();
         // String bonusState = result.getElementsByTagName("bonusState").item(0).getTextContent();
@@ -515,7 +512,7 @@ public class CashierController implements Initializable {
 
         cardStatus.setText(paymentState);
         if (paymentState.equals("ACCEPTED")) {
-            this.order.createPayment(amountToPay, PaymentType.CARD);
+            this.order.createPayment(amountToPay, PaymentType.DEBIT);
         }
         saveOrder(event);
         updateOrderLines();

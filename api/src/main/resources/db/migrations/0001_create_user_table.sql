@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS "user";
+DROP TABLE IF EXISTS "user" CASCADE;
 CREATE TABLE IF NOT EXISTS "user" (
     id SERIAL PRIMARY KEY,
     customer_reference UUID NOT NULL,

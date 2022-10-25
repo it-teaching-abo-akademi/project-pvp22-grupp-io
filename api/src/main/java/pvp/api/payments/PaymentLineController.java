@@ -3,7 +3,6 @@ package pvp.api.payments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import pvp.models.interfaces.Payment;
 import java.util.List;
 
 
@@ -19,12 +18,12 @@ public class PaymentLineController {
     }
 
     @GetMapping
-    public List<Payment> getAllPayments() {
+    public List<pvp.models.interfaces.Payment> getAllPayments() {
         return this.paymentLineService.getAllPayments();
     }
 
     @GetMapping("/{id}")
-    public Payment getNoteById(@PathVariable(value = "id") String id){
+    public pvp.models.interfaces.Payment getNoteById(@PathVariable(value = "id") int id){
         return paymentLineService.findById(id);
     }
 

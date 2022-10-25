@@ -1,10 +1,13 @@
 package pvp.api.payments;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import pvp.api.order.OrderDeserializer;
 import pvp.models.interfaces.Order;
 
 import java.io.Serializable;
 
+@JsonDeserialize(using= PaymentDeserializer.class)
 public class Payment extends pvp.models.Payment implements Serializable {
     public Payment(
             @JsonProperty("pk") Integer pk,

@@ -66,7 +66,6 @@ public class OrderDeserializer extends StdDeserializer<Order> {
                 ),
                 paymentNodeSet, node.get("complete").asBoolean());
 
-        System.out.println(paymentNode);
         paymentNode.elements().forEachRemaining(payments ->{
             JsonNode pkNode = payments.get("pk");
             Integer pk = null;
@@ -84,7 +83,6 @@ public class OrderDeserializer extends StdDeserializer<Order> {
                     payments.get("paymentType").asText()
             );
         });
-        System.out.println(order.getTotalPaidAmount());
 
         return order;
     }

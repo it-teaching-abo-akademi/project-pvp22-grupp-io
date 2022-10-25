@@ -59,16 +59,26 @@ public class UserDataAccessService {
     }
 
     int insertUser(User user) {
-        String sql = "" +
-                "INSERT INTO \"user\" (" +
-                " customer_reference, " +
-                " name) " +
-                "VALUES (?, ?)";
-        return jdbcTemplate.update(
-                sql,
-                user.getCustomerReference(),
-                user.getName()
-        );
+        pvp.models.interfaces.User dbUser = this.getUserByReference(user.getCustomerReference());
+
+        if (dbUser == null) {
+            String sql = "" +
+                    "INSERT INTO \"user\" (" +
+                    " customer_reference, " +
+                    " name) " +
+                    "VALUES (?, ?)";
+            return jdbcTemplate.update(
+                    sql,
+                    user.getCustomerReference(),
+                    user.getName()
+            );
+        } else {
+            String sql = "UPDATE \"user\"" +
+                    " SET customer_reference = '" + user.getCustomerReference() + "', " +
+                    "name = '" + user.getName() + "' " +
+                    "WHERE id = " + user.getPk();
+            return jdbcTemplate.update(sql);
+        }
     }
     private RowMapper<User> mapUsersFomDb() {
         return (resultSet, i) -> {

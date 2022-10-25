@@ -4,10 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import pvp.api.user.User;
 
 import java.util.List;
-import java.util.UUID;
 
 @Repository
 public class ProductDataAccessService {
@@ -61,19 +59,32 @@ public class ProductDataAccessService {
         return jdbcTemplate.query(sql, mapProductsFomDb());
     }
 
-    int insertProduct(String sku, Product product) {
-        String sql = "" +
-                "INSERT INTO product (" +
-                " sku, " +
-                " price," +
-                " name) " +
-                "VALUES (?, ?, ?)";
-        return jdbcTemplate.update(
-                sql,
-                sku,
-                product.getPrice(),
-                product.getName()
-        );
+    void insertProduct(String sku, Product product) {
+        Product dbProduct = this.getProductById(product.getPk());
+
+        if (dbProduct == null) {
+            String sql = "" +
+                    "INSERT INTO product (" +
+                    " sku, " +
+                    " price," +
+                    " name) " +
+                    "VALUES (?, ?, ?)";
+            jdbcTemplate.update(
+                    sql,
+                    sku,
+                    product.getPrice(),
+                    product.getName()
+            );
+        } else {
+            String sql = "" +
+                    "UPDATE product" +
+                    " SET sku = '" + sku + "', " +
+                    " price = '" + product.getPrice() + "'," +
+                    " name = '" + product.getName() + "' " +
+                    " WHERE id = " + product.getPk();
+            System.out.println(sql);
+            jdbcTemplate.update(sql);
+        }
     }
     private RowMapper<Product> mapProductsFomDb() {
         return (resultSet, i) -> {
