@@ -31,6 +31,11 @@ public class OrderDataAccessService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * selectAllOrders()
+     *
+     * Selects all orders from the postgreSQL database and returns a list with all the orders.
+     */
     List<Order> selectAllOrders() {
         String sql =
                 "SELECT * " +
@@ -39,6 +44,11 @@ public class OrderDataAccessService {
         return jdbcTemplate.query(sql, mapOrdersFomDb());
     }
 
+    /**
+     * selectIncompleteOrders()
+     *
+     * Selects all incomplete orders from the postgreSQL database and returns a list with all the incomplete orders.
+     */
     List<Order> selectIncompleteOrders() {
         String sql =
                 "SELECT * " +
@@ -47,6 +57,11 @@ public class OrderDataAccessService {
         return jdbcTemplate.query(sql, mapOrdersFomDb());
     }
 
+    /**
+     * getOrderById()
+     *
+     * Fetches an order from the postgreSQL database based on its ID.
+     */
     Order getOrderById(int id) {
         String sql = "" +
                 "SELECT *" +
@@ -59,6 +74,11 @@ public class OrderDataAccessService {
         return null;
     }
 
+    /**
+     * getOrderLinesByOrderId()
+     *
+     * Fetches a list of an order's orderlines from the postgreSQL database based on the order's ID.
+     */
     List<OrderLine> getOrderLinesByOrderId(int orderId) {
         String sql = "" +
                 "SELECT *" +
@@ -67,11 +87,16 @@ public class OrderDataAccessService {
         return jdbcTemplate.query(sql, mapOrderLinesFromDb());
     }
 
+    /**
+     * insertOrder()
+     *
+     * Checks if order exists in database, if it does
+     */
     int insertOrder(Order order) {
         Order dbOrder = this.getOrderById(order.getPk());
 
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        if (dbOrder == null) {
+        if (dbOrder == null) {  // If an order does not exist, a new one is created.
             String sql = "" +
                     "INSERT INTO \"order\" (" +
                     " user_id," +
@@ -91,7 +116,7 @@ public class OrderDataAccessService {
 
                     }, generatedKeyHolder
             );
-        } else {
+        } else {  // If an order does exist, it is updated.
             String sql = "" +
                     "UPDATE \"order\"" +
                     " SET user_id = " + order.getUserId() + "," +
@@ -110,7 +135,7 @@ public class OrderDataAccessService {
 
         jdbcTemplate.update("DELETE FROM order_line WHERE order_id = " + orderId + ";");
 
-        String orderLineSql = "INSERT INTO order_line (" +
+        String orderLineSql = "INSERT INTO order_line (" + //query to enter values into the orderline.
                 " total_price, " +
                 " quantity, " +
                 " order_id, " +
@@ -118,19 +143,24 @@ public class OrderDataAccessService {
                 "VALUES (?, ?, ?, ?)";
         Set<OrderLine> orderLines = order.getOrderLines();
 
-        orderLines.stream().forEach(orderLine -> {
+        orderLines.stream().forEach(orderLine -> { // updates/enters values into the orderline.
             jdbcTemplate.update(
                     orderLineSql,
                     orderLine.getTotalPrice(),
                     orderLine.getQuantity(),
                     orderId,
-                    2
+                    orderLine.getProductId()
             );
         });
 
         return orderId;
     }
 
+    /**
+     * mapOrderLinesFromDb()
+     *
+     * Returns a arrow-function that can be run to generate orderline from a database row.
+     */
     private RowMapper<OrderLine> mapOrderLinesFromDb() {
         ProductDataAccessService productService = new ProductDataAccessService(this.jdbcTemplate);
         return (resultSet, i) -> {
@@ -154,6 +184,11 @@ public class OrderDataAccessService {
         };
     }
 
+    /**
+     * mapOrderLinesFromDb()
+     *
+     * Returns a arrow-function that can be run to generate order from a database row.
+     */
     private RowMapper<Order> mapOrdersFomDb() {
         UserDataAccessService userService = new UserDataAccessService(this.jdbcTemplate);
         PaymentLineDataAccessService paymentService = new PaymentLineDataAccessService(this.jdbcTemplate);
