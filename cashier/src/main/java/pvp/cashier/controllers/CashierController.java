@@ -1,8 +1,5 @@
 package pvp.cashier.controllers;
 
-import com.almasb.fxgl.entity.action.Action;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -14,15 +11,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import pvp.cashier.models.CardReader;
 import pvp.cashier.models.Order;
 
 import java.io.*;
@@ -33,6 +34,16 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+
+import java.awt.image.BufferedImage;
+
+import java.io.File;
+import java.util.List;
+import javax.imageio.ImageIO;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
@@ -42,9 +53,7 @@ import pvp.models.interfaces.OrderLine;
 import pvp.models.interfaces.Payment;
 import pvp.models.interfaces.Product;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -348,6 +357,14 @@ public class CashierController implements Initializable {
 
     }
 
+    /**
+     * PayWithCash()
+     *
+     * A method for the option of paying a certain amount with cash.
+     * Calculating the amount to pay after subtracting the cash and defining the variable totalLeftToPay.
+     * Creating a order of the payment type CASH for the cash received, either paying everything with CASH or an amount.
+     * Update Orderlist, so that changes are shown for the Cashier.
+     */
     @FXML
     private void payWithCash(ActionEvent event) throws IOException {
         String amountString = cashAmount.getText();
@@ -387,20 +404,31 @@ public class CashierController implements Initializable {
         } catch (NumberFormatException e){}
     }
 
+    /**
+     * saveReceipt()
+     *
+     * stream in file directory, first trying Linux directory, then Microsoft directory and gives it the name "receipt".date.
+     * Writes in the required data for the receipt into the file.
+     * Closes the file and then renders an .png version of the receipt
+     */
     @FXML
     private void saveReceipt(ActionEvent event) throws DocumentException, IOException {
-        String date = new SimpleDateFormat("dd_MM_yyyy__HH_mm_ss").format(new Date());
-        FileOutputStream fos = null;
+        String fileDate = new SimpleDateFormat("dd_MM_yyyy__HH_mm_ss").format(new Date());
+        FileOutputStream fos;
+        boolean linux;
+
         try {
-            fos = new FileOutputStream("../receipts/receipt-" + date + ".pdf");
+            fos = new FileOutputStream("../receipts/receipt-" + fileDate + ".pdf"); //Linux
+            linux = true;
         } catch (FileNotFoundException e) {
-            fos = new FileOutputStream("~\\..\\receipts\\receipt_" + date + ".pdf");
+            fos = new FileOutputStream("~\\..\\receipts\\receipt_" + fileDate + ".pdf"); //Microsoft
+            linux = false;
         }
 
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document();
         PdfWriter writer = PdfWriter.getInstance(doc, fos);
 
-        date = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
+        String date = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
 
         doc.open();
         //adding paragraphs to the PDF
@@ -432,12 +460,43 @@ public class CashierController implements Initializable {
         if (order.getUser() != null) {
             doc.add(new Paragraph("User no." + order.getUser().getCustomerReference()));
         }
-        //closes the document
+
+        // closes the document
         doc.close();
-        //closes the output stream
+        // closes the output stream
         fos.close();
+
+        String sourceDir;
+        String destinationDir; // converted images from pdf document are saved here
+
+        if (linux) {
+            sourceDir = "../receipts/receipt-" + fileDate + ".pdf"; // Pdf files are read from this folder
+            destinationDir = "../receipts/receipt-" + fileDate + ".png";
+        } else {
+            sourceDir = "~\\..\\receipts\\receipt_" + fileDate + ".pdf";
+            destinationDir = "~\\..\\receipts\\receipt_" + fileDate + ".png";
+        }
+
+        try (final PDDocument document = PDDocument.load(new File(sourceDir))) {
+            PDFRenderer renderer = new PDFRenderer(document);
+            for (int page = 0; page < document.getNumberOfPages(); ++page) {
+                BufferedImage bim = renderer.renderImageWithDPI(page, 300, ImageType.RGB);
+                ImageIOUtil.writeImage(bim, destinationDir, 300);
+            }
+
+        } catch (IOException e){
+                System.err.println("Exception while trying to create pdf document - " + e);
+        }
+
     }
 
+    /**
+     * payWithCard()
+     *
+     * WAITING_FOR_PAYMENT: the process stops until the customer has paid (the "swipe card"-button has been pressed).
+     * DONE: the payment has been completed and registered.
+     * IDEAL: the status of the card is IDEAL when it is ready for payment-requests.
+     */
     @FXML
     private void payWithCard(ActionEvent event) throws IOException, JAXBException, InterruptedException, ParserConfigurationException, SAXException {
         HttpURLConnection httpURLConnection = (HttpURLConnection) cardReaderStatusUrl.openConnection();
@@ -523,6 +582,11 @@ public class CashierController implements Initializable {
         updateOrderLines();
     }
 
+    /**
+     * initialize()
+     *
+     * Connects the cells of the table in the front-end to their variables on the back-end.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         amountColumn.setCellValueFactory(param -> {
@@ -565,6 +629,12 @@ public class CashierController implements Initializable {
 
     }
 
+    /**
+     * addDiscount()
+     *
+     * Fetches discount as discountString.
+     * Fetches list of items selected to be discounted.
+     */
     @FXML
     public void addDiscount(ActionEvent actionEvent) {
         String discountString = discountAmount.getText();
@@ -576,6 +646,7 @@ public class CashierController implements Initializable {
         itemToDiscount.setUnitPrice(newPrice);
         itemToDiscount.calculatePrice();
         order.updateTotalPrice();
+
         updateOrderLines();
 
     }

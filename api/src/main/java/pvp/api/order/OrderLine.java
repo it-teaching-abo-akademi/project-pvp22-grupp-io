@@ -1,13 +1,9 @@
 package pvp.api.order;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import pvp.models.User;
-import pvp.models.interfaces.Payment;
 import pvp.models.interfaces.Product;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class OrderLine extends pvp.models.OrderLine implements Serializable {
     public OrderLine(

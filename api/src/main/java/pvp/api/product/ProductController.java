@@ -2,10 +2,8 @@ package pvp.api.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import pvp.api.user.User;
 
 import java.util.List;
-import java.util.UUID;
 
 
 @RestController

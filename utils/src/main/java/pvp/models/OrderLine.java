@@ -1,10 +1,8 @@
 package pvp.models;
 
 import pvp.models.abstractModels.PkModel;
-import pvp.models.interfaces.Order;
 import pvp.models.interfaces.Product;
 
-import java.util.Optional;
 
 public class OrderLine extends PkModel implements pvp.models.interfaces.OrderLine {
     private int unitPrice;

@@ -15,6 +15,9 @@ module pvp.cashier {
     requires pvp.models;
     requires java.sql;
     requires gson;
+    requires pdfbox;
+    requires java.desktop;
+    requires pdfbox.tools;
 
     opens pvp.cashier to javafx.fxml;
     exports pvp.cashier;

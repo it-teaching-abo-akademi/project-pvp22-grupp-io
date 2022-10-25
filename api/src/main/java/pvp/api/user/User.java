@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.lang.NonNull;
 
 @EntityScan
 public class User extends pvp.models.User implements Serializable {

@@ -15,7 +15,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import pvp.models.interfaces.Order;
-import pvp.models.interfaces.OrderLine;
 
 import java.net.URL;
 import java.util.List;

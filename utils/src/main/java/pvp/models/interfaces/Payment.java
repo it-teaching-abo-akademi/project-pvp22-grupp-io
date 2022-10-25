@@ -6,7 +6,6 @@ public interface Payment extends PkModel {
     public PaymentType getPaymentType();
     public int getPaymentTypeAsId();
     public void setAmount(int amount);
-
     public void setOrder(Order order);
     public void setOrderId(int id);
     public Order getOrder();

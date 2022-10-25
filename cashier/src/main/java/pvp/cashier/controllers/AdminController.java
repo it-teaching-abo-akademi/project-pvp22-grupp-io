@@ -1,26 +1,24 @@
 package pvp.cashier.controllers;
 
+
 import com.dlsc.formsfx.model.structure.DateField;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import pvp.models.interfaces.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import pvp.cashier.models.Order;
-import pvp.models.interfaces.OrderLine;
-import pvp.models.interfaces.Product;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
@@ -76,6 +74,7 @@ public class AdminController implements Initializable {
     }
 
     private void showProducts() throws IOException {
+
         productArrayList = new ArrayList<>();
         String urlArgs = "";
         for (Map.Entry me : filterArgs.entrySet()) {
@@ -97,8 +96,10 @@ public class AdminController implements Initializable {
             in.close();
 
             JSONArray json = new JSONArray(response.toString());
+
             json.forEach(object -> {
                 JSONObject element = (JSONObject) object;
+
                 String name = element.optString("name", "");
                 String sku = element.optString("sku", "");
 
@@ -180,5 +181,6 @@ public class AdminController implements Initializable {
     public void limitCustomer(ActionEvent actionEvent) {
         String newCustomerString = customerInput.getText();
         filterArgs.put("customer", newCustomerString);
+
     }
 }

@@ -1,10 +1,7 @@
 package pvp.api.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pvp.api.exceptions.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.UUID;
