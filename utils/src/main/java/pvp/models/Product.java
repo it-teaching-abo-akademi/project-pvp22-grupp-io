@@ -6,14 +6,14 @@ public class Product extends PkModel implements pvp.models.interfaces.Product {
     private int price;
     private String sku;
     private String name;
-    private Integer sold_count;
+    private Integer soldCount;
 
-    public Product(Integer pk, int price, String name, String sku, Integer sold_count) {
+    public Product(Integer pk, int price, String name, String sku, Integer soldCount) {
         super(pk);
         this.price = price;
         this.name = name;
         this.sku = sku;
-        this.sold_count = sold_count;
+        this.soldCount = soldCount;
     }
 
     @Override
@@ -44,5 +44,15 @@ public class Product extends PkModel implements pvp.models.interfaces.Product {
     @Override
     public String getSku() {
         return this.sku;
+    }
+
+    @Override
+    public Integer getSoldCount() {
+        return this.soldCount;
+    }
+
+    @Override
+    public void setSoldCount(Integer sold) {
+        this.soldCount = sold;
     }
 }

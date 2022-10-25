@@ -107,7 +107,7 @@ public class AdminController implements Initializable {
                         element.getInt("price"),
                         name,
                         sku,
-                        element.getInt("sold_count")
+                        element.getInt("soldCount")
                 ));
                 productView.getItems().setAll(productArrayList);
             });

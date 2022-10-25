@@ -8,4 +8,7 @@ public interface Product extends PkModel {
     public String getName();
     public int getPrice();
     public String getSku();
+
+    public Integer getSoldCount();
+    public void setSoldCount(Integer sold);
 }

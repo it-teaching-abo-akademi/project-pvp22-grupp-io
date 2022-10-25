@@ -97,9 +97,9 @@ public class ProductDataAccessService {
             return new Product(
                     pk,
                     sku,
+                    soldCount,
                     price,
-                    name,
-                    soldCount
+                    name
             );
         };
     }
