@@ -7,6 +7,11 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @EntityScan
 public class User extends pvp.models.User implements Serializable {
+
+    /**
+     * User()
+     * Extends the base User with JsonProperties to enable the serialization/deserialization functionality.
+     */
     public User(
             @JsonProperty("pk") int pk,
             @JsonProperty("customer_reference") UUID customerReference,

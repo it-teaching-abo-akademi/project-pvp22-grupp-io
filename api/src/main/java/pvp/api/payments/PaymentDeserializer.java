@@ -18,6 +18,10 @@ public class PaymentDeserializer extends StdDeserializer<Payment> {
         super(vc);
     }
 
+    /**
+     * deserialize()
+     * Takes a json parser and creates a full payment, including the amount, order_id as well as the payment_type_id.
+     */
     @Override
     public Payment deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonNode node = p.readValueAsTree();

@@ -17,6 +17,10 @@ public class ProductDataAccessService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * selectAllProducts()
+     * Selects all products from the postgreSQL database.
+     */
     List<Product> selectAllProducts() {
         String sql = "" +
                 "SELECT p.*, (select count(*) from order_line r where r.product_id = p.id) sold_count " +
@@ -25,6 +29,10 @@ public class ProductDataAccessService {
         return jdbcTemplate.query(sql, mapProductsFomDb());
     }
 
+    /**
+     * getProductBySku()
+     * fetches product by sku from the postgreSQL database.
+     */
     Product getProductBySku(String sku) {
         String sql = "" +
                 "SELECT p.*, (select count(*) from order_line r where r.product_id = p.id) sold_count " +
@@ -37,6 +45,10 @@ public class ProductDataAccessService {
         return null;
     }
 
+    /**
+     * getProductById()
+     * fetches product by ID from the postgreSQL database.
+     */
     public Product getProductById(int id) {
         String sql = "" +
                 "SELECT p.*, (select count(*) from order_line r where r.product_id = p.id) sold_count " +
@@ -49,6 +61,10 @@ public class ProductDataAccessService {
         return null;
     }
 
+    /**
+     * selectAllProductsBySearch()
+     * selects all products by search from the postgreSQL database.
+     */
     public List<Product> selectAllProductsBySearch(String search) {
         String sql = "" +
                 "SELECT p.*, (select count(*) from order_line r where r.product_id = p.id) sold_count " +
@@ -59,6 +75,10 @@ public class ProductDataAccessService {
         return jdbcTemplate.query(sql, mapProductsFomDb());
     }
 
+    /**
+     * insertProducts()
+     * inserts product to the postgreSQL database.
+     */
     void insertProduct(String sku, Product product) {
         Product dbProduct = this.getProductById(product.getPk());
 
@@ -86,6 +106,11 @@ public class ProductDataAccessService {
             jdbcTemplate.update(sql);
         }
     }
+
+    /**
+     * mapOrderLinesFromDb()
+     * Returns a arrow-function that can be run to generate product from a database row.
+     */
     private RowMapper<Product> mapProductsFomDb() {
         return (resultSet, i) -> {
             String sku = resultSet.getString("sku");

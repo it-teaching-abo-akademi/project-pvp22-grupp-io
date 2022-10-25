@@ -20,7 +20,11 @@ public class PaymentLineDataAccessService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    List<Payment> selectAllPaymentLines() {
+    /**
+     * selectAllPaymentLines()
+     * selects all paymentlines  from the postgreSQL database.
+     */
+    List<Payment> selectAllPaymentLines() { //selects all paymentlines from the postgreSQL database.
         String sql = "" +
                 "SELECT * " +
                 "FROM payment";
@@ -28,7 +32,11 @@ public class PaymentLineDataAccessService {
         return jdbcTemplate.query(sql, mapPaymentsFomDb());
     }
 
-    Payment getPaymentLineById(int id) {
+    /**
+     * getPaymentLineById()
+     * selects all paymentLine by ID from the postgreSQL database.
+     */
+    Payment getPaymentLineById(int id) { //selects all paymentlines by ID from the postgreSQL database.
         String sql = "" +
                 "SELECT *" +
                 "FROM payment " +
@@ -40,6 +48,10 @@ public class PaymentLineDataAccessService {
         return null;
     }
 
+    /**
+     * getPaymentsByOrderId()
+     * selects all payment by Order ID from the postgreSQL database.
+     */
     public List<Payment> getPaymentsByOrderId(int orderId) {
         String sql = "" +
                 "SELECT *" +
@@ -48,6 +60,10 @@ public class PaymentLineDataAccessService {
         return jdbcTemplate.query(sql, mapPaymentsFomDb());
     }
 
+    /**
+     * ensurePaymentTypes()
+     * ensures that the payment types exist in the database.
+     */
     private void ensurePaymentTypes(PaymentType paymentType) {
         String createPaymentTypesSql = "" +
             "INSERT INTO payment_type (" +
@@ -69,6 +85,10 @@ public class PaymentLineDataAccessService {
         }
     }
 
+    /**
+     * insertPaymentLine()
+     * Inserts paymentlines. If it does not succeed in finding payment type, the second insertPaymentLine is called and a payment type is created.
+     */
     int insertPaymentLine(Payment payment) {
         try {
             Payment dbPayment = this.getPaymentLineById(payment.getPk());
@@ -104,6 +124,10 @@ public class PaymentLineDataAccessService {
         return this.insertPaymentLine(payment, true);
     }
 
+    /**
+     * insertPaymentLine()
+     * inserts paymentline.
+     */
     int insertPaymentLine(Payment payment, boolean looped) {
         String sql = "" +
                 "INSERT INTO payment (" +
@@ -118,6 +142,11 @@ public class PaymentLineDataAccessService {
                 payment.getOrderId()
         );
     }
+
+    /**
+     * mapPaymentsFomDb()*
+     * Returns a arrow-function that can be run to generate a payment from a database row.
+     */
     private RowMapper<Payment> mapPaymentsFomDb() {
         return (resultSet, i) -> {
             Integer pk = resultSet.getInt("id");

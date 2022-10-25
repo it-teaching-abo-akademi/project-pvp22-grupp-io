@@ -18,6 +18,10 @@ public class UserDataAccessService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * selectAllUsers()
+     * selects all users from the postgreSQL database.
+     */
     List<User> selectAllUsers() {
         String sql = "" +
                 "SELECT " +
@@ -29,6 +33,10 @@ public class UserDataAccessService {
         return jdbcTemplate.query(sql, mapUsersFomDb());
     }
 
+    /**
+     * getUserByReference()
+     * fetches user from the postgreSQL database.
+     */
     User getUserByReference(UUID reference) {
         String sql = "" +
                 "SELECT " +
@@ -43,6 +51,11 @@ public class UserDataAccessService {
         }
         return null;
     }
+
+    /**
+     * getUserById()
+     * fetches user by ID from the postgreSQL database.
+     */
     public User getUserById(int id) {
         String sql = "" +
                 "SELECT " +
@@ -58,6 +71,10 @@ public class UserDataAccessService {
         return null;
     }
 
+    /**
+     * insertUser()
+     * inserts user into the postgreSQL databasen.
+     */
     int insertUser(User user) {
         pvp.models.interfaces.User dbUser = this.getUserByReference(user.getCustomerReference());
 
@@ -80,6 +97,11 @@ public class UserDataAccessService {
             return jdbcTemplate.update(sql);
         }
     }
+
+    /**
+     * mapUsersFomDb()
+     * Returns a arrow-function that can be run to generate user from a database row.
+     */
     private RowMapper<User> mapUsersFomDb() {
         return (resultSet, i) -> {
             String userIdStr = resultSet.getString("customer_reference");

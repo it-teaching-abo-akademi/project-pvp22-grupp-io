@@ -9,6 +9,11 @@ import java.io.Serializable;
 
 @JsonDeserialize(using= PaymentDeserializer.class)
 public class Payment extends pvp.models.Payment implements Serializable {
+
+    /**
+     * Payment()
+     * Extends the base Payment with JsonProperties to enable the serialization/deserialization functionality.
+     */
     public Payment(
             @JsonProperty("pk") Integer pk,
             @JsonProperty("amount") int amount,
@@ -18,6 +23,10 @@ public class Payment extends pvp.models.Payment implements Serializable {
         super(pk, amount, paymentType, orderId);
     }
 
+    /**
+     * Payment()
+     * Extends the base Payment with JsonProperties to enable the serialization/deserialization functionality.
+     */
     public Payment(
             @JsonProperty("pk") Integer pk,
             @JsonProperty("amount") int amount,

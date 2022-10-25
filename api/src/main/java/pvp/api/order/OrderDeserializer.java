@@ -20,10 +20,16 @@ public class OrderDeserializer extends StdDeserializer<Order> {
     public OrderDeserializer() {
         this(null);
     }
+
     protected OrderDeserializer(Class<?> vc) {
         super(vc);
     }
 
+    /**
+     * deserialize()
+     *
+     * Takes a json parser and creates a full order, including the paymentLines, orderLines as well as the user.
+     */
     @Override
     public Order deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonNode node = p.readValueAsTree();
@@ -80,7 +86,6 @@ public class OrderDeserializer extends StdDeserializer<Order> {
                     payments.get("paymentType").asText()
             );
         });
-
         return order;
     }
 }

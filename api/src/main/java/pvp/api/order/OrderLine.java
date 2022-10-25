@@ -6,6 +6,12 @@ import pvp.models.interfaces.Product;
 import java.io.Serializable;
 
 public class OrderLine extends pvp.models.OrderLine implements Serializable {
+
+    /**
+     * OrderLine()
+     *
+     * Extends the base OrderLines with JsonProperties to enable the serialization/deserialization functionality.
+     */
     public OrderLine(
             @JsonProperty("pk") Integer pk,
             @JsonProperty("product_id") Integer productId,
@@ -15,6 +21,12 @@ public class OrderLine extends pvp.models.OrderLine implements Serializable {
     ) {
         super(pk, unitPrice, quantity, totalPrice, productId);
     }
+
+    /**
+     * OrderLine()
+     *
+     * Extend the base OrderLines with JsonProperties to enable the serialization/deserialization functionality.
+     */
     public OrderLine(
             @JsonProperty("pk") Integer pk,
             @JsonProperty("product") Product product,
