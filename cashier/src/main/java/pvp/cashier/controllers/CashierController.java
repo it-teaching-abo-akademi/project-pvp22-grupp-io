@@ -228,8 +228,10 @@ public class CashierController implements Initializable {
     }
 
     private void updateOrderLines() {
-        amountLeftToPay.setText(String.valueOf((this.order.getTotalPrice() - this.order.getTotalPaidAmount()) * 0.0100) + "€");
-        orderTotal.setText(String.valueOf(this.order.getTotalPrice() * 0.0100) + "€");
+        int orderTotalPrice = (int) (this.order.getTotalPrice() * 0.01);
+        int amountLeftToPayPrice = (int) ((this.order.getTotalPrice() - this.order.getTotalPaidAmount()) * 0.01);
+        amountLeftToPay.setText(String.valueOf(amountLeftToPayPrice) + "€");
+        orderTotal.setText(String.valueOf(orderTotalPrice) + "€");
         prodTableView.getItems().setAll(this.order.getOrderLines());
         customerController.updateOrderLines();
     }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -18,16 +19,17 @@
             <TableColumn fx:id="timeColumn" prefWidth="127.0" text="Time period" />
         </columns>
       </TableView>
-      <TextField fx:id="timeInput" layoutX="23.0" layoutY="286.0" promptText="Time period" />
-      <Button layoutX="22.0" layoutY="313.0" mnemonicParsing="false" onAction="#limitTime" prefHeight="26.0" prefWidth="150.0" text="Limit" />
-      <TextField fx:id="ageInput" layoutX="205.0" layoutY="286.0" promptText="Customer age" />
-      <Button layoutX="204.0" layoutY="313.0" mnemonicParsing="false" onAction="#limitAge" prefHeight="26.0" prefWidth="150.0" text="Limit" />
+      <DatePicker fx:id="timeInputStart" layoutX="23.0" layoutY="286.0" promptText="Time period start" />
+      <Button layoutX="35.0" layoutY="338.0" mnemonicParsing="false" onAction="#limitTime" prefHeight="26.0" prefWidth="150.0" text="Limit" />
+      <TextField fx:id="ageInput" layoutX="226.0" layoutY="286.0" promptText="Customer age" />
+      <Button layoutX="225.0" layoutY="313.0" mnemonicParsing="false" onAction="#limitAge" prefHeight="26.0" prefWidth="150.0" text="Limit" />
       <Button layoutX="395.0" layoutY="286.0" mnemonicParsing="false" onAction="#limitMale" text="Male" />
       <Button layoutX="531.0" layoutY="286.0" mnemonicParsing="false" onAction="#limitSexBoth" text="Both" />
       <Button layoutX="459.0" layoutY="286.0" mnemonicParsing="false" onAction="#limitFemale" text="Female" />
       <TextField fx:id="newPriceInput" layoutX="412.0" layoutY="326.0" promptText="New price" />
       <Button layoutX="443.0" layoutY="363.0" mnemonicParsing="false" onAction="#editPrice" text="Set new price" />
-      <TextField fx:id="timeInput1" layoutX="52.0" layoutY="362.0" prefHeight="26.0" prefWidth="239.0" promptText="Customer name/number" />
-      <Button layoutX="52.0" layoutY="389.0" mnemonicParsing="false" onAction="#limitTime" prefHeight="26.0" prefWidth="239.0" text="Search products bought by customer" />
+      <Button layoutX="106.0" layoutY="414.0" mnemonicParsing="false" onAction="#limitCustomer" prefHeight="26.0" prefWidth="239.0" text="Search products bought by customer" />
+      <DatePicker fx:id="timeInputEnd" layoutX="23.0" layoutY="314.0" promptText="Time period end" />
+      <TextField fx:id="customerInput" layoutX="104.0" layoutY="388.0" prefHeight="25.0" prefWidth="239.0" promptText="Customer" />
    </children>
 </AnchorPane>
