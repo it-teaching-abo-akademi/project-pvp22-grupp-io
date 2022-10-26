@@ -69,6 +69,7 @@ public class OrderLine extends PkModel implements pvp.models.interfaces.OrderLin
     @Override
     public void setUnitPrice(int amount) {
         this.unitPrice = amount;
+        calculatePrice();
     }
 
     /**
@@ -92,6 +93,8 @@ public class OrderLine extends PkModel implements pvp.models.interfaces.OrderLin
     @Override
     public void setProduct(Product product) {
         this.product = product;
+        this.unitPrice = product.getPrice();
+        calculatePrice();
     }
 
     /**

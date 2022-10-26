@@ -176,7 +176,8 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
     public Optional<OrderLine> getOrderLineById(int id) {
         Stream<OrderLine> unFilteredLines = this.orderLines.stream();
         Stream<OrderLine> filteredLines = unFilteredLines.filter(orderLine -> {
-            if (orderLine.getPk() == id) { return true; }
+
+            if (orderLine.getPk() != null && orderLine.getPk() == id) { return true; }
             return false;
         });
         return filteredLines.findFirst();

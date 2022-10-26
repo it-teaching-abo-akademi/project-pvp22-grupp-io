@@ -193,8 +193,6 @@ public class CashierController implements Initializable {
                 response.append(inputLine);
             }
             in.close();
-
-            this.order.setUser() response.toString()
         }
 
     }
