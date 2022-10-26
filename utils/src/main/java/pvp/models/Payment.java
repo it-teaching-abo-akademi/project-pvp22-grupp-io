@@ -9,7 +9,13 @@ public class Payment extends PkModel implements pvp.models.interfaces.Payment {
     private Order order;
     private int orderId;
 
-
+    /**
+     * Payment()
+     * @param pk - pk of the payment.
+     * @param amount - amount of the payment.
+     * @param paymentType as a PaymentType- payment type of the payment.
+     * @param order - order of the payment.
+     */
     public Payment (Integer pk, int amount, PaymentType paymentType, Order order) {
         super(pk);
         this.amount = amount;
@@ -17,18 +23,41 @@ public class Payment extends PkModel implements pvp.models.interfaces.Payment {
         this.order = order;
     }
 
+    /**
+     * Payment()
+     * @param pk - pk of the payment.
+     * @param amount - amount of the payment.
+     * @param paymentType as a String - payment type of the payment.
+     * @param order - order of the payment.
+     */
     public Payment (Integer pk, int amount, String paymentType, Order order) {
         super(pk);
         this.amount = amount;
         this.paymentType = PaymentType.valueOf(paymentType);
         this.order = order;
     }
+
+    /**
+     * Payment()
+     * @param pk - pk of the payment.
+     * @param amount - amount of the payment.
+     * @param paymentType as a PaymentType - payment type of the payment.
+     * @param orderId - order ID of the payment.
+     */
     public Payment (Integer pk, int amount, PaymentType paymentType, int orderId) {
         super(pk);
         this.amount = amount;
         this.paymentType = paymentType;
         this.orderId = orderId;
     }
+
+    /**
+     * Payment()
+     * @param pk - pk of the payment.
+     * @param amount - amount of the payment.
+     * @param paymentType as a String - payment type of the payment.
+     * @param orderId as an int - order ID of the payment.
+     */
     public Payment (Integer pk, int amount, String paymentType, int orderId) {
         super(pk);
         this.amount = amount;
@@ -48,16 +77,25 @@ public String toString() { return "amount: " + this.amount + "Type: " + this.pay
         return this.paymentType.ordinal();
     }
 
+    /**
+     * @param amount
+     */
     @Override
     public void setAmount(int amount) {
         this.amount = amount;
     }
 
+    /**
+     * @param order
+     */
     @Override
     public void setOrder(Order order) {
         this.order = order;
     }
 
+    /**
+     * @param id
+     */
     @Override
     public void setOrderId(int id) {
         this.orderId = id;

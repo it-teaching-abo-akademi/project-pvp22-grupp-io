@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 import pvp.cashier.models.Order;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -669,8 +670,20 @@ public class CashierController implements Initializable {
     public void addDiscount(ActionEvent actionEvent) {
         String discountString = discountAmount.getText();
         int amount = (int) (Float.parseFloat(discountString) * 100);
+
         OrderLine itemToDiscount = prodTableView.getSelectionModel().getSelectedItem();
+        if (itemToDiscount == null) {
+            System.out.println("No item selected");
+            return;
+        }
         int currentPrice = itemToDiscount.getUnitPrice();
+        if (amount < 0 ) {
+            amount = Math.abs(amount);
+        }
+        if (currentPrice < amount) {
+            amount = currentPrice;
+        }
+
         int newPrice = currentPrice-amount;
         itemToDiscount.setUnitPrice(newPrice);
         itemToDiscount.calculatePrice();
@@ -678,7 +691,6 @@ public class CashierController implements Initializable {
 
         updateOrderLines();
         discountAmount.clear();
-
     }
 
     public String priceRounder(int price) {

@@ -21,6 +21,10 @@ public class PaymentDeserializer extends StdDeserializer<Payment> {
     /**
      * deserialize()
      * Takes a json parser and creates a full payment, including the amount, order_id as well as the payment_type_id.
+     * @param p - a JsonParser.
+     * @param ctxt - DeserializationContext
+     * @throws IOException - IOException.
+     * @throws JsonProcessingException - JsonProcessingException.
      */
     @Override
     public Payment deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {

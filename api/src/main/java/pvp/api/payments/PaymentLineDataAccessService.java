@@ -35,6 +35,7 @@ public class PaymentLineDataAccessService {
     /**
      * getPaymentLineById()
      * selects all paymentLine by ID from the postgreSQL database.
+     * @param id - the ID of the paymentline being searched for.
      */
     Payment getPaymentLineById(int id) { //selects all paymentlines by ID from the postgreSQL database.
         String sql = "" +
@@ -51,6 +52,7 @@ public class PaymentLineDataAccessService {
     /**
      * getPaymentsByOrderId()
      * selects all payment by Order ID from the postgreSQL database.
+     * @param orderId - the order ID of the payment that's being searched for.
      */
     public List<Payment> getPaymentsByOrderId(int orderId) {
         String sql = "" +
@@ -63,6 +65,7 @@ public class PaymentLineDataAccessService {
     /**
      * ensurePaymentTypes()
      * ensures that the payment types exist in the database.
+     * @param paymentType - the payment type to be checked.
      */
     private void ensurePaymentTypes(PaymentType paymentType) {
         String createPaymentTypesSql = "" +
@@ -88,6 +91,7 @@ public class PaymentLineDataAccessService {
     /**
      * insertPaymentLine()
      * Inserts paymentlines. If it does not succeed in finding payment type, the second insertPaymentLine is called and a payment type is created.
+     * @param payment - the paymentline to be inserted.
      */
     int insertPaymentLine(Payment payment) {
         try {
@@ -127,6 +131,7 @@ public class PaymentLineDataAccessService {
     /**
      * insertPaymentLine()
      * inserts paymentline.
+     * @param payment - the paymentline to be inserted
      */
     int insertPaymentLine(Payment payment, boolean looped) {
         String sql = "" +

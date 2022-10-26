@@ -61,6 +61,7 @@ public class OrderDataAccessService {
      * getOrderById()
      *
      * Fetches an order from the postgreSQL database based on its ID.
+     * @param id - the id of the order being searched for.
      */
     Order getOrderById(int id) {
         String sql = "" +
@@ -78,6 +79,7 @@ public class OrderDataAccessService {
      * getOrderLinesByOrderId()
      *
      * Fetches a list of an order's orderlines from the postgreSQL database based on the order's ID.
+     * @param orderId - the id of the order.
      */
     List<OrderLine> getOrderLinesByOrderId(int orderId) {
         String sql = "" +

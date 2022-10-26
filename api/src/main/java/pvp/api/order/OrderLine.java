@@ -11,6 +11,11 @@ public class OrderLine extends pvp.models.OrderLine implements Serializable {
      * OrderLine()
      *
      * Extends the base OrderLines with JsonProperties to enable the serialization/deserialization functionality.
+     * @param  - the pk of the orderline.
+     * @param productId - the product ID of the orderline.
+     * @param unitPrice - the unit price of the orderline.
+     * @param quantity - the quantity of the orderline.
+     * @param totalPrice - the total price of the orderline.
      */
     public OrderLine(
             @JsonProperty("pk") Integer pk,
@@ -26,6 +31,11 @@ public class OrderLine extends pvp.models.OrderLine implements Serializable {
      * OrderLine()
      *
      * Extend the base OrderLines with JsonProperties to enable the serialization/deserialization functionality.
+     * @param pk - the pk of the orderline.
+     * @param product - the product of the orderline.
+     * @param unitPrice - the unit price of the orderline.
+     * @param quantity - the quantity of the orderline.
+     * @param totalPrice - the total price of the orderline.
      */
     public OrderLine(
             @JsonProperty("pk") Integer pk,
