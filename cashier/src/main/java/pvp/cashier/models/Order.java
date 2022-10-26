@@ -11,6 +11,10 @@ import pvp.models.interfaces.Payment;
 
 public class Order extends pvp.models.Order implements Serializable {
 
+    /**
+     * Order()
+     * Order properties are added the HashSet-value on OrderLine and Payment to enable Serializable.
+     */
     public Order() {
         super(null,
                 0,
@@ -20,6 +24,10 @@ public class Order extends pvp.models.Order implements Serializable {
                 false);
     }
 
+    /**
+     * Order()
+     * Order properties are fetched from the User interface.
+     */
     public Order(Integer pk,
                  Integer price,
                  Set<OrderLine> orderLines,
