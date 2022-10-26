@@ -1,5 +1,6 @@
 package pvp.cashier.controllers;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -9,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import pvp.models.interfaces.OrderLine;
 import pvp.models.interfaces.Product;
 import java.net.URL;
 import java.util.List;
@@ -18,11 +20,11 @@ public class ProductPopupController implements Initializable {
     @FXML
     private TableColumn<Product, String> nameColumn;
     @FXML
-    private TableColumn<Product, Integer> priceColumn;
+    private TableColumn<Product, String> priceColumn;
     @FXML
-    private TableColumn<Product, Integer> skuColumn;
+    private TableColumn<Product, String> skuColumn;
     @FXML
-    private TableColumn<Product, Integer> pkColumn;
+    private TableColumn<Product, String> pkColumn;
     @FXML
     private Label prodLabel;
     @FXML
@@ -74,9 +76,15 @@ public class ProductPopupController implements Initializable {
 
     private void createTableView(){
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price" ));
+        //priceColumn.setCellValueFactory(new PropertyValueFactory<>("price" ));
         pkColumn.setCellValueFactory(new PropertyValueFactory<>("pk" ));
         skuColumn.setCellValueFactory(new PropertyValueFactory<>("sku" ));
+
+        priceColumn.setCellValueFactory(param -> {
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(Double.toString((param.getValue().getPrice()) *.010) + "€");
+            return q;
+        });
+
     }
 
 

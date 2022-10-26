@@ -2,6 +2,8 @@ package pvp.cashier.controllers;
 
 
 import com.dlsc.formsfx.model.structure.DateField;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -47,7 +49,7 @@ public class AdminController implements Initializable {
     @FXML
     private TableColumn<Product, Integer> pkColumn;
     @FXML
-    private TableColumn<Product, Integer> priceColumn;
+    private TableColumn<Product, String> priceColumn;
     @FXML
     private TableColumn<Product, Integer> skuColumn;
     @FXML
@@ -70,7 +72,12 @@ public class AdminController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         filterArgs = new HashMap<String, String>();
         productColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        //priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        priceColumn.setCellValueFactory(param -> {
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(((param.getValue().getPrice()) *.010) + "€");
+
+            return q;
+        });
         pkColumn.setCellValueFactory(new PropertyValueFactory<>("pk"));
         skuColumn.setCellValueFactory(new PropertyValueFactory<>("sku"));
         itemSoldColumn.setCellValueFactory(new PropertyValueFactory<>("soldCount"));

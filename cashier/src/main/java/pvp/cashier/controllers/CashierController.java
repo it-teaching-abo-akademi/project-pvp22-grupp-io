@@ -244,6 +244,7 @@ public class CashierController implements Initializable {
             System.out.println("GET request not worked");
             openProductList();
         }
+        skuInput.clear();
     }
 
     /**
@@ -260,10 +261,8 @@ public class CashierController implements Initializable {
      * GUI
      */
     private void updateOrderLines() {
-        double orderTotalPrice = (this.order.getTotalPrice() * 0.01);
-        double amountLeftToPayPrice = ((this.order.getTotalPrice() - this.order.getTotalPaidAmount()) * 0.01);
-        amountLeftToPay.setText(String.valueOf(amountLeftToPayPrice) + "€");
-        orderTotal.setText(String.valueOf(orderTotalPrice) + "€");
+        amountLeftToPay.setText(priceRounder(this.order.getTotalPrice()));
+        orderTotal.setText(priceRounder(this.order.getTotalPrice() - this.order.getTotalPaidAmount()));
         prodTableView.getItems().setAll(this.order.getOrderLines());
         customerController.updateOrderLines();
     }
@@ -432,6 +431,7 @@ public class CashierController implements Initializable {
                 saveOrder(event);
             }
             updateOrderLines();
+            cashAmount.clear();
         } catch (NumberFormatException e){}
     }
 
@@ -624,13 +624,14 @@ public class CashierController implements Initializable {
             return q;
         });
         priceColumn.setCellValueFactory(param -> {
-            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(Double.toString((param.getValue().getTotalPrice()) *.010) + "€");
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(priceRounder(param.getValue().getTotalPrice()));
             return q;
         });
         discountColumn.setCellValueFactory(param -> {
             OrderLine orderline = param.getValue();
             Product product = orderline.getProduct();
-            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(Double.toString((product.getPrice() * orderline.getQuantity() - orderline.getTotalPrice())*0.010) + "€");
+
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(priceRounder(product.getPrice() * orderline.getQuantity() - orderline.getTotalPrice()));
             return q;
         });
         NameColumn.setCellValueFactory(param -> {
@@ -667,16 +668,20 @@ public class CashierController implements Initializable {
     @FXML
     public void addDiscount(ActionEvent actionEvent) {
         String discountString = discountAmount.getText();
-        int amount = Integer.parseInt(discountString)*100;
+        int amount = (int) (Float.parseFloat(discountString) * 100);
         OrderLine itemToDiscount = prodTableView.getSelectionModel().getSelectedItem();
         int currentPrice = itemToDiscount.getUnitPrice();
-        //double newPrice = currentPrice*(1-(amount*0.01));
         int newPrice = currentPrice-amount;
         itemToDiscount.setUnitPrice(newPrice);
         itemToDiscount.calculatePrice();
         order.updateTotalPrice();
 
         updateOrderLines();
+        discountAmount.clear();
 
+    }
+
+    public String priceRounder(int price) {
+        return String.format("$%.2f€ ", price * 0.01);
     }
 }
