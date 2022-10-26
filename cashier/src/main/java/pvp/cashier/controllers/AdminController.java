@@ -25,8 +25,11 @@ import java.util.*;
 
 public class AdminController implements Initializable {
 
+
     HashMap<String, String> filterArgs;
 
+    @FXML
+    public TextField skuInput;
     @FXML
     private TextField customerInput;
     @FXML
@@ -200,4 +203,8 @@ public class AdminController implements Initializable {
     }
 
 
+    public void limitSku(ActionEvent actionEvent) {
+        String newSkuString = skuInput.getText();
+        filterArgs.put("sku", newSkuString);
+    }
 }
