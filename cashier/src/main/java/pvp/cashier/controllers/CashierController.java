@@ -244,6 +244,7 @@ public class CashierController implements Initializable {
             System.out.println("GET request not worked");
             openProductList();
         }
+        skuInput.clear();
     }
 
     /**
@@ -429,6 +430,7 @@ public class CashierController implements Initializable {
                 saveOrder(event);
             }
             updateOrderLines();
+            cashAmount.clear();
         } catch (NumberFormatException e){}
     }
 
@@ -622,7 +624,7 @@ public class CashierController implements Initializable {
             return q;
         });
         priceColumn.setCellValueFactory(param -> {
-            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(Double.toString((param.getValue().getTotalPrice()) *.010) + "€");
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(((param.getValue().getTotalPrice()) *.010) + "€");
             return q;
         });
         discountColumn.setCellValueFactory(param -> {
@@ -676,6 +678,7 @@ public class CashierController implements Initializable {
         order.updateTotalPrice();
 
         updateOrderLines();
+        discountAmount.clear();
 
     }
 }
