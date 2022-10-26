@@ -39,11 +39,7 @@ public class AdminController implements Initializable {
     @FXML
     private TextField ageInput;
     @FXML
-    private DateField timeInput;
-    @FXML
     private TableColumn<Product, Integer> itemSoldColumn;
-    @FXML
-    private TableColumn<Product, Integer> timeColumn;
     @FXML
     private TableColumn<Product, Integer> productColumn;
     @FXML
@@ -130,7 +126,6 @@ public class AdminController implements Initializable {
                         element.getInt("price"),
                         name,
                         sku,
-                        //element.getInt("timePeriod"),
                         element.getInt("soldCount")
                 ));
                 productView.getItems().setAll(productArrayList);
@@ -213,5 +208,9 @@ public class AdminController implements Initializable {
     public void limitSku(ActionEvent actionEvent) {
         String newSkuString = skuInput.getText();
         filterArgs.put("sku", newSkuString);
+    }
+
+    public String priceRounder(int price) {
+        return String.format("$%.2f€ ", price * 0.01);
     }
 }
