@@ -70,8 +70,7 @@ public class AdminController implements Initializable {
         productColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         //priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         priceColumn.setCellValueFactory(param -> {
-            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(((param.getValue().getPrice()) *.010) + "€");
-
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(priceRounder(param.getValue().getPrice()));
             return q;
         });
         pkColumn.setCellValueFactory(new PropertyValueFactory<>("pk"));
@@ -139,7 +138,7 @@ public class AdminController implements Initializable {
      */
     public void editPrice(ActionEvent actionEvent) throws IOException {
         String newPriceString = newPriceInput.getText();
-        int amount = Integer.parseInt(newPriceString);
+        int amount = (int) (Float.parseFloat(newPriceString) * 100);
 
         JSONObject json = new JSONObject();
 
