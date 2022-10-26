@@ -11,6 +11,14 @@ public class OrderLine extends PkModel implements pvp.models.interfaces.OrderLin
     private Product product;
     private Integer productId;
 
+    /**
+     * OrderLine()
+     * @param pk - the pk of the orderline.
+     * @param unitPrice - the unitprice of the orderline.
+     * @param quantity - the quantity of the orderline.
+     * @param totalPrice - the total price of the orderline.
+     * @param product - the product of the orderline.
+     */
     public OrderLine(Integer pk, int unitPrice, int quantity, Integer totalPrice, Product product) {
         super(pk);
         this.unitPrice = unitPrice;
@@ -19,6 +27,14 @@ public class OrderLine extends PkModel implements pvp.models.interfaces.OrderLin
         this.product = product;
         this.productId = product.getPk();
     }
+    /**
+     * OrderLine()
+     * @param pk - the pk of the orderline.
+     * @param unitPrice - the unitprice of the orderline.
+     * @param quantity - the quantity of the orderline.
+     * @param totalPrice - the total price of the orderline.
+     * @param productId - the product ID of the orderline.
+     */
     public OrderLine(Integer pk, int unitPrice, int quantity, Integer totalPrice, Integer productId) {
         super(pk);
         this.unitPrice = unitPrice;
@@ -45,11 +61,21 @@ public class OrderLine extends PkModel implements pvp.models.interfaces.OrderLin
         this.totalPrice = this.quantity * this.unitPrice;
     }
 
+    /**
+     * setUnitPrice()
+     * Sets the unit price to the given value of amount.
+     * @param amount
+     */
     @Override
     public void setUnitPrice(int amount) {
         this.unitPrice = amount;
     }
 
+    /**
+     * setTotalPrice()
+     * Set total price to the given value of amount.
+     * @param amount - the total price.
+     */
     @Override
     public void setTotalPrice(int amount) {
         this.totalPrice = amount;
@@ -60,11 +86,17 @@ public class OrderLine extends PkModel implements pvp.models.interfaces.OrderLin
         return this.product;
     }
 
+    /**
+     * @param product - product to be set.
+     */
     @Override
     public void setProduct(Product product) {
         this.product = product;
     }
 
+    /**
+     * @param id - the ID to be set to the product.
+     */
     @Override
     public void setProductId(int id) {
         this.productId = id;
@@ -80,6 +112,11 @@ public class OrderLine extends PkModel implements pvp.models.interfaces.OrderLin
         return this.quantity;
     }
 
+    /**
+     * setQuantity()
+     * Sets a cuantity, then calculates the price.
+     * @param quantity - the quantity to be set.
+     */
     @Override
     public void setQuantity(int quantity) {
         this.quantity = quantity;

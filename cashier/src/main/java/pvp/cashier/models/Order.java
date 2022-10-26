@@ -27,6 +27,12 @@ public class Order extends pvp.models.Order implements Serializable {
     /**
      * Order()
      * Order properties are fetched from the User interface.
+     * @param pk - pk of order.
+     * @param price - price of order.
+     * @param orderLines - orderlines in order.
+     * @param user - user of order.
+     * @param payments - payments of order.
+     * @param complete - complete or uncomplete status of order.
      */
     public Order(Integer pk,
                  Integer price,

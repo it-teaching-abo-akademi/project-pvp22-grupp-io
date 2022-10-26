@@ -25,6 +25,10 @@ public class OrderController {
         return this.orderService.getAllOrders();
     }
 
+    /**
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     public Order getNoteById(@PathVariable(value = "id") int id){
         return orderService.findById(id);
@@ -35,6 +39,10 @@ public class OrderController {
         return this.orderService.getIncompleteOrders();
     }
 
+    /**
+     * @param order
+     * @return
+     */
     @PostMapping
     public int addNewOrder(@RequestBody Order order) {
         int savedOrderid = this.orderService.addNewOrder(order);

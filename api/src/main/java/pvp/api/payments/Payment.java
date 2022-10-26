@@ -13,6 +13,10 @@ public class Payment extends pvp.models.Payment implements Serializable {
     /**
      * Payment()
      * Extends the base Payment with JsonProperties to enable the serialization/deserialization functionality.
+     * @param pk - the pk of the payment.
+     * @param amount - the amount of the payment.
+     * @param orderId - the order ID of the payment.
+     * @param paymentType - the payment type of the payment.
      */
     public Payment(
             @JsonProperty("pk") Integer pk,
@@ -26,6 +30,10 @@ public class Payment extends pvp.models.Payment implements Serializable {
     /**
      * Payment()
      * Extends the base Payment with JsonProperties to enable the serialization/deserialization functionality.
+     * @param pk - the pk of the payment.
+     * @param amount - the amount of the payment.
+     * @param order - order of the payment.
+     * @param paymentType - the payment type of the payment.
      */
     public Payment(
             @JsonProperty("pk") Integer pk,

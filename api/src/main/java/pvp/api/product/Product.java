@@ -9,6 +9,11 @@ public class Product extends pvp.models.Product implements Serializable {
     /**
      * Product()
      * Extends the base Product with JsonProperties to enable the serialization/deserialization functionality.
+     * @param pk - pk of the product.
+     * @param sku - sku of the product.
+     * @param soldCount - soldCount of the product.
+     * @param price - price of the product.
+     * @param name - name of the product.
      */
     public Product(
             @JsonProperty("pk") Integer pk,

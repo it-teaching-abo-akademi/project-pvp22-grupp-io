@@ -20,7 +20,13 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
 
     /**
      * Order()
-     * Sets properties of Order.
+     * Instantiates order, given there is a user.
+     * @param pk
+     * @param totalPrice
+     * @param orderLines
+     * @param user
+     * @param payments
+     * @param complete
      */
     public Order(
             Integer pk, int totalPrice,
@@ -39,7 +45,13 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
 
     /**
      * Order()
-     * Sets properties of Order.
+     * Instantiates order, given there is an user ID.
+     * @param pk
+     * @param totalPrice
+     * @param orderLines
+     * @param userId
+     * @param payments
+     * @param complete
      */
     public Order(
             int pk, int totalPrice,
@@ -58,7 +70,7 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
 
     /**
      * updateTotalPrice()
-     *
+     * Updates the total price of the orderline.
      */
     @Override
     public void updateTotalPrice() {
@@ -67,12 +79,25 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
         }).sum();
     }
 
+    /**
+     * getTotalPrice()
+     * Fetches total price.
+     */
     public int getTotalPrice(){
         return this.totalPrice;
     }
 
+    /**
+     * isComplete()
+     * Returns true if order is complete, and false if order is uncomplete.
+     */
     @Override
     public boolean isComplete() { return this.complete; }
+
+    /**
+     * getTotalPaidAmount()
+     * Fetches total paid amount.
+     */
     @Override
     public int getTotalPaidAmount() {
         return this.payments.stream().mapToInt(payment -> {
@@ -80,17 +105,35 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
         }).sum();
     }
 
+    /**
+     * getPayment()
+     * fetches payment.
+     */
     public Set<Payment> getPayments() {
         return this.payments;
     }
 
+    /**
+     * getOrderLines()
+     * Fetches orderlines as a Set of orderlines.
+     */
     public Set<pvp.models.interfaces.OrderLine> getOrderLines() {
         return this.orderLines;
     }
 
+    /**
+     * addOrderLine()
+     * @param orderLine - orderline to be added.
+     */
     @Override
     public void addOrderLine(pvp.models.interfaces.OrderLine orderLine) { this.orderLines.add(orderLine); }
 
+    /**
+     * addProduct()
+     * If orderline with product exists, increase amount.
+     * If orderline with product does not exist, create new orderline.
+     * @param product - the product to be added and compared to other products with.
+     */
     @Override
     public void addProduct(Product product) {
         Optional<OrderLine> possibleOrderLine = findOrderLineByProduct(product);
@@ -106,6 +149,12 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
         updateTotalPrice();
     }
 
+    /**
+     * findOrderLineByProduct()
+     * If the given product's pk equals orderline's product's id, return true.
+     * If the given product's pk does not equal orderline's product's id, return false.
+     * @param product - product used to find order.
+     */
     private Optional<OrderLine> findOrderLineByProduct(Product product) {
         Stream<OrderLine> unFilteredLines = this.orderLines.stream();
         Stream<OrderLine> filteredLines = unFilteredLines.filter(orderLine -> {
@@ -117,6 +166,12 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
         return filteredLines.findFirst();
     }
 
+    /**
+     * getOrderLineById()
+     * If orderline's pk equals the id given, return true.
+     * If orderline's pk does not equal the id given, return false.
+     * @param id - id of the orderline to be fetched.
+     */
     @Override
     public Optional<OrderLine> getOrderLineById(int id) {
         Stream<OrderLine> unFilteredLines = this.orderLines.stream();
@@ -127,11 +182,21 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
         return filteredLines.findFirst();
     }
 
+    /**
+     * removerOrderLine()
+     * @param orderLine - orderline to be removed.
+     */
     @Override
     public void removeOrderLine(pvp.models.interfaces.OrderLine orderLine) {
         this.orderLines.remove(orderLine);
     }
 
+    /**
+     * Checks if the orderline ID exists.
+     * If it is empty, it returns nothing.
+     * Otherwise, it removew the orderline.
+     * @param orderLineId - id of orderline to check.
+     */
     @Override
     public void removeOrderLine(int orderLineId) {
         Optional<OrderLine> line = this.getOrderLineById(orderLineId);
@@ -148,6 +213,7 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
 
     @Override
     public void setIsComplete(boolean isComplete) { this.complete = isComplete; }
+
     @Override
     public void setUserId(int id) {
         this.userId = id;
@@ -165,16 +231,35 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
         return this.userId;
     }
 
+    /**
+     * createPayment()
+     * Creates payment with the properties: pk, amount, paymentType and order.
+     * @param amount - a property of the payment.
+     * @param paymentType - a property of the payment.
+     */
     @Override
     public void createPayment(int amount, PaymentType paymentType) {
             this.payments.add(new pvp.models.Payment(null, amount, paymentType, this));
     }
 
+    /**
+     * createPayment()
+     * Creates payment with the properties: pk, amount, paymentTupe and order.
+     * @param amount - a property of the payment.
+     * @param paymentType - a property of the payment
+     */
     @Override
     public void createPayment(int amount, String paymentType) {
         this.payments.add(new pvp.models.Payment(null, amount, paymentType, this));
     }
 
+    /**
+     * createPayment()
+     * Creates payment with the properties: pk, amount, paymentTupe and order.
+     * @param amount - a property of the payment.
+     * @param paymentType - a property of the payment.
+     * @param pk - a property of the payment.
+     */
     @Override
     public void createPayment(Integer pk, int amount, String paymentType) {
         this.payments.add(new pvp.models.Payment(pk, amount, paymentType, this));

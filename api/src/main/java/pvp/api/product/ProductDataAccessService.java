@@ -32,6 +32,7 @@ public class ProductDataAccessService {
     /**
      * getProductBySku()
      * fetches product by sku from the postgreSQL database.
+     * @param sku - sku of the product being fetched.
      */
     Product getProductBySku(String sku) {
         String sql = "" +
@@ -48,6 +49,7 @@ public class ProductDataAccessService {
     /**
      * getProductById()
      * fetches product by ID from the postgreSQL database.
+     * @param id - the id of the product being fetched.
      */
     public Product getProductById(int id) {
         String sql = "" +
@@ -64,6 +66,7 @@ public class ProductDataAccessService {
     /**
      * selectAllProductsBySearch()
      * selects all products by search from the postgreSQL database.
+     * @param search
      */
     public List<Product> selectAllProductsBySearch(String search) {
         String sql = "" +
@@ -78,6 +81,8 @@ public class ProductDataAccessService {
     /**
      * insertProducts()
      * inserts product to the postgreSQL database.
+     * @param sku  - the sku of the product to be inserted.
+     * @param product - the product to be inserted.
      */
     void insertProduct(String sku, Product product) {
         Product dbProduct = this.getProductById(product.getPk());
@@ -109,7 +114,7 @@ public class ProductDataAccessService {
 
     /**
      * mapOrderLinesFromDb()
-     * Returns a arrow-function that can be run to generate product from a database row.
+     * Returns an arrow-function that can be run to generate product from a database row.
      */
     private RowMapper<Product> mapProductsFomDb() {
         return (resultSet, i) -> {

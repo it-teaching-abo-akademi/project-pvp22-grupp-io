@@ -29,6 +29,10 @@ public class OrderDeserializer extends StdDeserializer<Order> {
      * deserialize()
      *
      * Takes a json parser and creates a full order, including the paymentLines, orderLines as well as the user.
+     * @param p - a JsonParser.
+     * @param ctxt - the DeserializationContext.
+     * @throws IOException - IOexeption.
+     * @throws JsonProcessingException - JsonProcessingException.
      */
     @Override
     public Order deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
