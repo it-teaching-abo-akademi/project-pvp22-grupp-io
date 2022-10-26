@@ -18,6 +18,10 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
 
     private boolean complete;
 
+    /**
+     * Order()
+     * Sets properties of Order.
+     */
     public Order(
             Integer pk, int totalPrice,
             Set<pvp.models.interfaces.OrderLine> orderLines,
@@ -32,6 +36,11 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
         this.user = user;
         this.complete = complete;
     }
+
+    /**
+     * Order()
+     * Sets properties of Order.
+     */
     public Order(
             int pk, int totalPrice,
             Set<pvp.models.interfaces.OrderLine> orderLines,
@@ -47,6 +56,10 @@ public class Order extends PkModel implements pvp.models.interfaces.Order {
         this.complete = complete;
     }
 
+    /**
+     * updateTotalPrice()
+     *
+     */
     @Override
     public void updateTotalPrice() {
         this.totalPrice = this.orderLines.stream().mapToInt(orderLine -> {

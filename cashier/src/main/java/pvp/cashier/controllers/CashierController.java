@@ -136,9 +136,9 @@ public class CashierController implements Initializable {
 
     /**
      * saveOrder()
-     *
      * Method for saving incomplete orders, is triggered by the Save Order button in
      * the POSApplication and saves the current order
+     * Saves order with all orderlines, all payments and the user to the postgreSQL.
      */
     @FXML
     public void saveOrder(ActionEvent event) throws IOException {
@@ -248,6 +248,7 @@ public class CashierController implements Initializable {
     }
 
     /**
+     * addSelectedProduct()
      * Adds selected product to the current order from the doSearch pop-up window
      */
     protected void addSelectedProduct(Product product) {
@@ -284,6 +285,10 @@ public class CashierController implements Initializable {
         prodListStage.show();
     }
 
+    /**
+     * deserializeOrder()
+     * Enables deserializer to Order by adding it as a JSONObject.
+     */
     private pvp.models.interfaces.Order deserializeOrder(JSONObject jsonOrder) {
 
         JSONObject userObject = (JSONObject) jsonOrder.get("user");
@@ -344,6 +349,7 @@ public class CashierController implements Initializable {
     }
 
     /**
+     * openOrderList()
      * Method triggered by the View Orders button and displays the saved orders in a
      * pop-up window
      */
@@ -387,10 +393,7 @@ public class CashierController implements Initializable {
 
     /**
      * PayWithCash()
-     *
-     * A method for the option of paying a certain amount with cash.
-     * Calculating the amount to pay after subtracting the cash and defining the variable totalLeftToPay.
-     * Creating a order of the payment type CASH for the cash received, either paying everything with CASH or an amount.
+     * Pay with payment type CASH.
      * Update Orderlist, so that changes are shown for the Cashier.
      */
     @FXML
@@ -436,8 +439,8 @@ public class CashierController implements Initializable {
 
     /**
      * saveReceipt()
-     *
-     * stream in file directory, first trying Linux directory, then Microsoft directory and gives it the name "receipt".date.
+     * Saves receipt.
+     * Streams in file directory, first trying Linux directory, then Microsoft directory.
      * Writes in the required data for the receipt into the file.
      * Closes the file and then renders an .png version of the receipt
      */
@@ -522,7 +525,7 @@ public class CashierController implements Initializable {
 
     /**
      * payWithCard()
-     *
+     * Pay with payment type CARD.
      * WAITING_FOR_PAYMENT: the process stops until the customer has paid (the "swipe card"-button has been pressed).
      * DONE: the payment has been completed and registered.
      * IDEAL: the status of the card is IDEAL when it is ready for payment-requests.
@@ -614,7 +617,6 @@ public class CashierController implements Initializable {
 
     /**
      * initialize()
-     *
      * Connects the cells of the table in the front-end to their variables on the back-end.
      */
     @Override
@@ -661,7 +663,6 @@ public class CashierController implements Initializable {
 
     /**
      * addDiscount()
-     *
      * Fetches discount as discountString.
      * Fetches list of items selected to be discounted.
      */
