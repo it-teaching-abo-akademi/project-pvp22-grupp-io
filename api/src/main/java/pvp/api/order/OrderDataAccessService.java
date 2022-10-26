@@ -95,7 +95,12 @@ public class OrderDataAccessService {
      * Checks if order exists in database, if it does
      */
     int insertOrder(Order order) {
-        Order dbOrder = this.getOrderById(order.getPk());
+        Order dbOrder;
+        try {
+            dbOrder = this.getOrderById(order.getPk());
+        } catch (NullPointerException e) {
+            dbOrder = null;
+        }
 
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         if (dbOrder == null) {  // If an order does not exist, a new one is created.

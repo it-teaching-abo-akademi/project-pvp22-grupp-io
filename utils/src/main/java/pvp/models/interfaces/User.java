@@ -1,9 +1,26 @@
 package pvp.models.interfaces;
 
-import java.util.UUID;
+import org.json.JSONObject;
+import pvp.models.Sex;
 
-public interface User extends PkModel {
-    public void setName(String name);
-    public String getName();
-    public UUID getCustomerReference();
+import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.Set;
+
+public interface User extends PkModel, JSONSerializable {
+    // Getters
+    public void setFirstName(String first_name);
+    public void setLastName(String last_name);
+    public void setBirthDay(ZonedDateTime birthday);
+    public void setSex(Sex sex);
+    public void setBonusCards(Set<BonusCard> cards);
+    public void setBonusPoints(int bonus_points);
+
+    // Setters
+    public String getFirstName();
+    public String getLastName();
+    public ZonedDateTime getBirthDay();
+    public Sex getSex();
+    public Set<BonusCard> getBonusCards();
+    public int getBonusPoints();
 }

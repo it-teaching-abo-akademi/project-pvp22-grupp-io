@@ -157,6 +157,7 @@ public class AdminController implements Initializable {
         httpURLConnection.setDoOutput(true);
         OutputStream os = httpURLConnection.getOutputStream();
         os.write(json.toString().getBytes());
+        System.out.println(json.toString());
         os.flush();
         os.close();
         System.out.println(httpURLConnection.getResponseCode());

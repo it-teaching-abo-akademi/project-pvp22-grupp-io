@@ -144,7 +144,6 @@ public class CashierController implements Initializable {
     @FXML
     public void saveOrder(ActionEvent event) throws IOException {
         JSONObject json = new JSONObject();
-        JSONObject user = new JSONObject();
         List<JSONObject> payments = new ArrayList<JSONObject>();
         List<JSONObject> orderlines = new ArrayList<JSONObject>();
 
@@ -152,9 +151,6 @@ public class CashierController implements Initializable {
         json.accumulate("order_total", this.order.getTotalPrice());
         json.accumulate("userId", this.order.getUserId());
         json.accumulate("complete", this.order.isComplete());
-        user.accumulate("pk", this.order.getUser().getPk());
-        user.accumulate("customerReference", this.order.getUser().getCustomerReference());
-        user.accumulate("name", this.order.getUser().getName());
 
         for (Payment payment : this.order.getPayments()) {
             JSONObject jsonPayment = new JSONObject();
@@ -173,7 +169,9 @@ public class CashierController implements Initializable {
             jsonOrderLine.accumulate("productId", orderLine.getProductId());
             orderlines.add(jsonOrderLine);
         }
-        json.accumulate("user", user);
+        if (this.order.getUser() != null ) {
+            json.accumulate("user", this.order.getUser().getJsonOfObject());
+        }
         json.accumulate("order_lines", orderlines);
         json.accumulate("payment_lines", payments);
 
@@ -186,6 +184,19 @@ public class CashierController implements Initializable {
         os.write(json.toString().getBytes());
         os.flush();
         os.close();
+        if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) { // success
+            BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            this.order.setUser() response.toString()
+        }
+
     }
 
     /**
@@ -289,23 +300,11 @@ public class CashierController implements Initializable {
      * Enables deserializer to Order by adding it as a JSONObject.
      */
     private pvp.models.interfaces.Order deserializeOrder(JSONObject jsonOrder) {
-
-        JSONObject userObject = (JSONObject) jsonOrder.get("user");
-        String name = "";
-        if (!userObject.isNull("name")) {
-            name = userObject.getString("name");
-        }
-        pvp.models.interfaces.User user = new User(
-                userObject.getInt("pk"),
-                UUID.fromString(userObject.getString("customer_reference")),
-                name
-        );
-
         pvp.models.interfaces.Order order = new Order(
                 jsonOrder.getInt("pk"),
                 jsonOrder.getInt("totalPrice"),
                 new HashSet<OrderLine>(),
-                user,
+                User.getObjectFromJson(jsonOrder.getJSONObject("user")),
                 new HashSet<Payment>(),
                 jsonOrder.getBoolean("complete")
         );
@@ -313,7 +312,7 @@ public class CashierController implements Initializable {
         for (int i = 0; i < orderLines.length(); i++) {
             JSONObject jsonOrderLine = orderLines.getJSONObject(i);
             JSONObject jsonProduct = jsonOrderLine.getJSONObject("product");
-            name = "";
+            String name = "";
             if (!jsonProduct.isNull("name")) {
                 name = jsonProduct.getString("name");
             }
@@ -490,7 +489,7 @@ public class CashierController implements Initializable {
         doc.add(new Paragraph());
 
         if (order.getUser() != null) {
-            doc.add(new Paragraph("User no." + order.getUser().getCustomerReference()));
+            doc.add(new Paragraph("User no." + order.getUser().getPk()));
         }
 
         // closes the document

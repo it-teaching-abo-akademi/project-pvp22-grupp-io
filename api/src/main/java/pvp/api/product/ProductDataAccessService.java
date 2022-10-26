@@ -4,7 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.xml.sax.SAXException;
+import pvp.api.xmlparser.ProductParser;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Repository
@@ -84,8 +92,13 @@ public class ProductDataAccessService {
      * @param sku  - the sku of the product to be inserted.
      * @param product - the product to be inserted.
      */
-    void insertProduct(String sku, Product product) {
-        Product dbProduct = this.getProductById(product.getPk());
+    void insertProduct(String sku, pvp.models.interfaces.Product product) {
+        Product dbProduct = null;
+        try {
+            dbProduct = this.getProductById(product.getPk());
+        } catch (NullPointerException e){
+            System.out.println("Error");
+        }
 
         if (dbProduct == null) {
             String sql = "" +

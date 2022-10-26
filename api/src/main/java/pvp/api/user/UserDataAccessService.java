@@ -1,10 +1,16 @@
 package pvp.api.user;
 
+import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import pvp.models.PaymentType;
+import pvp.models.Sex;
+import pvp.models.interfaces.BonusCard;
 
+import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,10 +30,7 @@ public class UserDataAccessService {
      */
     List<User> selectAllUsers() {
         String sql = "" +
-                "SELECT " +
-                " id, " +
-                " customer_reference, " +
-                " name " +
+                "SELECT *" +
                 "FROM \"user\"";
 
         return jdbcTemplate.query(sql, mapUsersFomDb());
@@ -39,10 +42,7 @@ public class UserDataAccessService {
      */
     User getUserByReference(UUID reference) {
         String sql = "" +
-                "SELECT " +
-                " id, " +
-                " customer_reference, " +
-                " name " +
+                "SELECT *" +
                 "FROM \"user\" " +
                 "WHERE customer_reference = '" + reference + "'";
         List<User> users = jdbcTemplate.query(sql, mapUsersFomDb());
@@ -58,10 +58,7 @@ public class UserDataAccessService {
      */
     public User getUserById(int id) {
         String sql = "" +
-                "SELECT " +
-                " id, " +
-                " customer_reference, " +
-                " name " +
+                "SELECT * " +
                 "FROM \"user\" " +
                 "WHERE id = '" + id + "'";
         List<User> users = jdbcTemplate.query(sql, mapUsersFomDb());
@@ -76,23 +73,33 @@ public class UserDataAccessService {
      * inserts user into the postgreSQL databasen.
      */
     int insertUser(User user) {
-        pvp.models.interfaces.User dbUser = this.getUserByReference(user.getCustomerReference());
+        pvp.models.interfaces.User dbUser = this.getUserById(user.getPk());
 
         if (dbUser == null) {
             String sql = "" +
                     "INSERT INTO \"user\" (" +
-                    " customer_reference, " +
-                    " name) " +
-                    "VALUES (?, ?)";
+                    "first_name, " +
+                    "last_name, " +
+                    "birth_day, " +
+                    "sex, " +
+                    "bonus_points)" +
+                    "VALUES (?, ?, ?, ?, ?)";
             return jdbcTemplate.update(
                     sql,
-                    user.getCustomerReference(),
-                    user.getName()
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getBirthDay().toString(),
+                    user.getSex().name(),
+                    user.getBonusPoints()
             );
         } else {
             String sql = "UPDATE \"user\"" +
-                    " SET customer_reference = '" + user.getCustomerReference() + "', " +
-                    "name = '" + user.getName() + "' " +
+                    " SET " +
+                    "first_name = '" + user.getFirstName() + "', " +
+                    "last_name = '" + user.getLastName() + "'," +
+                    "birth_day = '" + user.getBirthDay().toString() + "', " +
+                    "sex = '" + user.getSex().name() + "', " +
+                    "bonus_points = '" + user.getBonusPoints() + "' " +
                     "WHERE id = " + user.getPk();
             return jdbcTemplate.update(sql);
         }
@@ -104,16 +111,17 @@ public class UserDataAccessService {
      */
     private RowMapper<User> mapUsersFomDb() {
         return (resultSet, i) -> {
-            String userIdStr = resultSet.getString("customer_reference");
-            UUID userId = UUID.fromString(userIdStr);
+            Sex sex = Sex.valueOf(resultSet.getString("sex"));
+            String birthdayString = resultSet.getString("birth_day");
 
-            int pk = resultSet.getInt("id");
-
-            String name = resultSet.getString("name");
             return new User(
-                    pk,
-                    userId,
-                    name
+                    resultSet.getInt("id"),
+                    resultSet.getString("first_name"),
+                    resultSet.getString("last_name"),
+                    sex,
+                    ZonedDateTime.parse(birthdayString),
+                    new HashSet<BonusCard>(),
+                    resultSet.getInt("bonus_points")
             );
         };
     }

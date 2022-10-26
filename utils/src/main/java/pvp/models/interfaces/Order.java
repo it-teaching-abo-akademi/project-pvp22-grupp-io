@@ -28,4 +28,6 @@ public interface Order extends PkModel {
     public void createPayment(int amount, PaymentType paymentType);
     public void createPayment(int amount, String paymentType);
     public void createPayment(Integer pk, int amount, String paymentType);
+
+    public void setPk(int pk);
 }

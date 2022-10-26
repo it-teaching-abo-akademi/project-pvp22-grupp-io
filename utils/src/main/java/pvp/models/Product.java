@@ -1,6 +1,13 @@
 package pvp.models;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import pvp.models.abstractModels.PkModel;
+import pvp.models.interfaces.Payment;
+
+import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Product extends PkModel implements pvp.models.interfaces.Product {
     private int price;

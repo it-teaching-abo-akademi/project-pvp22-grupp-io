@@ -5,12 +5,16 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.json.JSONObject;
 import pvp.api.user.User;
+import pvp.models.Sex;
+import pvp.models.interfaces.BonusCard;
 import pvp.models.interfaces.Order;
 import pvp.models.interfaces.OrderLine;
 import pvp.models.interfaces.Payment;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -56,7 +60,11 @@ public class OrderDeserializer extends StdDeserializer<Order> {
         });
         Set<Payment> paymentNodeSet = new HashSet<Payment>();
 
-        JsonNode user = node.get("user");
+        pvp.models.interfaces.User user = null;
+        if (node.has("user")) {
+            System.out.println(node.textValue());
+            user = User.getObjectFromJson(new JSONObject(node.textValue()));
+        }
         JsonNode orderPkNode = node.get("pk");
         Integer orderPk = null;
         if (orderPkNode != null) {
@@ -66,11 +74,7 @@ public class OrderDeserializer extends StdDeserializer<Order> {
                 orderPk,
                 node.get("order_total").asInt(),
                 orderLineSet,
-                new User(
-                        user.get("pk").asInt(),
-                        UUID.fromString(user.get("customerReference").asText()),
-                        user.get("name").asText()
-                ),
+                user,
                 paymentNodeSet, node.get("complete").asBoolean());
 
         paymentNode.elements().forEachRemaining(payments ->{

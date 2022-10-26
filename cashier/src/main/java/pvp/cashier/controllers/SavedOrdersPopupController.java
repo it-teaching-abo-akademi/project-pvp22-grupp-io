@@ -71,7 +71,7 @@ public class SavedOrdersPopupController implements Initializable {
         productsColumn.setCellValueFactory(new PropertyValueFactory<>("orderLines" ));
         paymentsColumn.setCellValueFactory(new PropertyValueFactory<>("payments" ));
         userIdColumn.setCellValueFactory(param -> {
-            String name = param.getValue().getUser().getCustomerReference().toString();
+            String name = param.getValue().getUser().getPk().toString();
             ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(name);
             return q;
         });

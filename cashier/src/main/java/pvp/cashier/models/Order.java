@@ -19,7 +19,7 @@ public class Order extends pvp.models.Order implements Serializable {
         super(null,
                 0,
                 new HashSet<OrderLine>(),
-                new User(1, UUID.randomUUID(), "Test user"),
+                null,
                 new HashSet<Payment>(),
                 false);
     }
