@@ -31,6 +31,11 @@ public class CustomerController implements Initializable {
     private TextField leftToPay;
     private pvp.models.interfaces.Order order;
 
+    /**
+     * initialize()
+     *
+     * Connects the cells of the table in the front-end to their variables on the back-end.
+     */
     public void initialize(URL url, ResourceBundle resourceBundle) {
         amountColumn.setCellValueFactory(param -> {
             ObservableValue<Integer> q = new ReadOnlyObjectWrapper<Integer>(param.getValue().getQuantity());

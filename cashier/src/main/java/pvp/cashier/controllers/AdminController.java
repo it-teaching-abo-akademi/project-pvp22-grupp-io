@@ -58,6 +58,11 @@ public class AdminController implements Initializable {
     private Order order;
     private ArrayList<Product> productArrayList = new ArrayList<>();
 
+    /**
+     * initialize()
+     *
+     * Connects the cells of the table in the front-end to their variables on the back-end.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         filterArgs = new HashMap<String, String>();
@@ -65,6 +70,8 @@ public class AdminController implements Initializable {
         priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         pkColumn.setCellValueFactory(new PropertyValueFactory<>("pk"));
         skuColumn.setCellValueFactory(new PropertyValueFactory<>("sku"));
+        itemSoldColumn.setCellValueFactory(new PropertyValueFactory<>("soldCount"));
+        //timeColumn.setCellValueFactory(new PropertyValueFactory<>("timePeriod????????"));
 
         try {
             showProducts();
@@ -73,6 +80,11 @@ public class AdminController implements Initializable {
         }
     }
 
+    /**
+     * Method for displaying products with additional information.
+     * Shows all products when the AdminApplication starts, limits products and
+     * information based of filterArgs, used by the different limit methods
+     */
     private void showProducts() throws IOException {
 
         productArrayList = new ArrayList<>();
@@ -108,6 +120,7 @@ public class AdminController implements Initializable {
                         element.getInt("price"),
                         name,
                         sku,
+                        //element.getInt("timePeriod"),
                         element.getInt("soldCount")
                 ));
                 productView.getItems().setAll(productArrayList);
@@ -115,6 +128,10 @@ public class AdminController implements Initializable {
         }
     }
 
+    /**
+     * Allows the admin to edit the prices of products in cents as the
+     * newPriceString
+     */
     public void editPrice(ActionEvent actionEvent) throws IOException {
         String newPriceString = newPriceInput.getText();
         int amount = Integer.parseInt(newPriceString);
@@ -157,7 +174,6 @@ public class AdminController implements Initializable {
         if (newTimeEndString != null) {
             filterArgs.put("endTime", newTimeEndString.toString());
         }
-        System.out.println(filterArgs);
     }
 
     public void limitAge(ActionEvent actionEvent) {
@@ -181,6 +197,7 @@ public class AdminController implements Initializable {
     public void limitCustomer(ActionEvent actionEvent) {
         String newCustomerString = customerInput.getText();
         filterArgs.put("customer", newCustomerString);
-
     }
+
+
 }

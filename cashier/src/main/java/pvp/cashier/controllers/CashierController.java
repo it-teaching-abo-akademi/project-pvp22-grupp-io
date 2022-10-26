@@ -134,6 +134,12 @@ public class CashierController implements Initializable {
         updateOrderLines();
     }
 
+    /**
+     * saveOrder()
+     *
+     * Method for saving incomplete orders, is triggered by the Save Order button in
+     * the POSApplication and saves the current order
+     */
     @FXML
     public void saveOrder(ActionEvent event) throws IOException {
         JSONObject json = new JSONObject();
@@ -181,6 +187,13 @@ public class CashierController implements Initializable {
         os.close();
     }
 
+    /**
+     * doSearch()
+     *
+     * Selects all the products that match with either name or sku and adds them to
+     * a pop-up window, where you can select the correct product.
+     * Triggered by the search item button in the cashier view
+     */
     @FXML
     private void doSearch(ActionEvent event) throws IOException {
         searchedProducts = new ArrayList<Product>();
@@ -233,20 +246,30 @@ public class CashierController implements Initializable {
         }
     }
 
+    /**
+     * Adds selected product to the current order from the doSearch pop-up window
+     */
     protected void addSelectedProduct(Product product) {
         order.addProduct(product);
         updateOrderLines();
     }
 
+    /**
+     * Updates the Orderlines and converts the price from cents to euros in the
+     * GUI
+     */
     private void updateOrderLines() {
-        int orderTotalPrice = (int) (this.order.getTotalPrice() * 0.01);
-        int amountLeftToPayPrice = (int) ((this.order.getTotalPrice() - this.order.getTotalPaidAmount()) * 0.01);
+        double orderTotalPrice = (this.order.getTotalPrice() * 0.01);
+        double amountLeftToPayPrice = ((this.order.getTotalPrice() - this.order.getTotalPaidAmount()) * 0.01);
         amountLeftToPay.setText(String.valueOf(amountLeftToPayPrice) + "€");
         orderTotal.setText(String.valueOf(orderTotalPrice) + "€");
         prodTableView.getItems().setAll(this.order.getOrderLines());
         customerController.updateOrderLines();
     }
 
+    /**
+     * Called by the doSearch method and displays all the products in a pop-up window
+     */
     private void openProductList() throws IOException {
         FXMLLoader prodListLoader = new FXMLLoader(getClass().getResource("ProductPopup.fxml"));
         Parent prod = prodListLoader.load();
@@ -319,6 +342,10 @@ public class CashierController implements Initializable {
         return order;
     }
 
+    /**
+     * Method triggered by the View Orders button and displays the saved orders in a
+     * pop-up window
+     */
     @FXML
     private void openOrderList(ActionEvent event) throws IOException{
         searchedOrders = new ArrayList<pvp.models.interfaces.Order>();
@@ -392,6 +419,7 @@ public class CashierController implements Initializable {
             }
             int totalPrice = this.order.getTotalPrice();
             int paidAmount = this.order.getTotalPaidAmount();
+            System.out.println(paidAmount);
             int totalLeftToPay = totalPrice - paidAmount;
             if (totalLeftToPay >= amount) {
                 this.order.createPayment(amount, PaymentType.CASH);

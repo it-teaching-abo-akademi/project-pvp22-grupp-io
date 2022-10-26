@@ -50,6 +50,9 @@ public class SavedOrdersPopupController implements Initializable {
 
     }
 
+    /**
+     * Makes the currently selected order the ongoing order
+     */
     public void accept(ActionEvent event) {
         Order selectedOrder = orderTableView.getSelectionModel().getSelectedItem();
         if (selectedOrder != null) {
@@ -74,6 +77,11 @@ public class SavedOrdersPopupController implements Initializable {
         });
     }
 
+    /**
+     * initialize()
+     *
+     * Connects the cells of the table in the front-end to their variables on the back-end.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         createTableView();

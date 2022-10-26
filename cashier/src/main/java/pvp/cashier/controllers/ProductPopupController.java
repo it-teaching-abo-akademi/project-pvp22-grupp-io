@@ -32,6 +32,11 @@ public class ProductPopupController implements Initializable {
     private CashierController cashierController;
     private String currentProd;
 
+    /**
+     * initialize()
+     *
+     * Connects the cells of the table in the front-end to their variables on the back-end.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         createTableView();
@@ -52,6 +57,9 @@ public class ProductPopupController implements Initializable {
         prodTableView.getItems().addAll(products);
     }
 
+    /**
+     * Adds the selected product to the current order
+     */
     public void accept(ActionEvent event) {
         Product selectedProduct = prodTableView.getSelectionModel().getSelectedItem();
         if (selectedProduct != null) {
