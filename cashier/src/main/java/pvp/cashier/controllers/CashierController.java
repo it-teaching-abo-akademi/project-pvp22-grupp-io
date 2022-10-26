@@ -261,10 +261,8 @@ public class CashierController implements Initializable {
      * GUI
      */
     private void updateOrderLines() {
-        double orderTotalPrice = (this.order.getTotalPrice() * 0.01);
-        double amountLeftToPayPrice = ((this.order.getTotalPrice() - this.order.getTotalPaidAmount()) * 0.01);
-        amountLeftToPay.setText(String.valueOf(amountLeftToPayPrice) + "€");
-        orderTotal.setText(String.valueOf(orderTotalPrice) + "€");
+        amountLeftToPay.setText(priceRounder(this.order.getTotalPrice()));
+        orderTotal.setText(priceRounder(this.order.getTotalPrice() - this.order.getTotalPaidAmount()));
         prodTableView.getItems().setAll(this.order.getOrderLines());
         customerController.updateOrderLines();
     }
@@ -626,7 +624,7 @@ public class CashierController implements Initializable {
             return q;
         });
         priceColumn.setCellValueFactory(param -> {
-            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(((param.getValue().getTotalPrice()) *.010) + "€");
+            ObservableValue<String> q = new ReadOnlyObjectWrapper<String>(priceRounder(param.getValue().getTotalPrice()));
             return q;
         });
         discountColumn.setCellValueFactory(param -> {
@@ -672,7 +670,6 @@ public class CashierController implements Initializable {
         int amount = Integer.parseInt(discountString)*100;
         OrderLine itemToDiscount = prodTableView.getSelectionModel().getSelectedItem();
         int currentPrice = itemToDiscount.getUnitPrice();
-        //double newPrice = currentPrice*(1-(amount*0.01));
         int newPrice = currentPrice-amount;
         itemToDiscount.setUnitPrice(newPrice);
         itemToDiscount.calculatePrice();
