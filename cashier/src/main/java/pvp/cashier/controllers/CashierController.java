@@ -19,6 +19,7 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -483,6 +484,7 @@ public class CashierController implements Initializable {
 
         if (order.getUser() != null) {
             doc.add(new Paragraph("User no." + order.getUser().getPk()));
+            doc.add(new Paragraph("Bonus points left: " + order.getUser().getBonusPoints()));
         }
 
         // closes the document
@@ -596,11 +598,12 @@ public class CashierController implements Initializable {
         String goodThruMonth = result.getElementsByTagName("goodThruMonth").item(0).getTextContent();
         String goodThruYear = result.getElementsByTagName("goodThruYear").item(0).getTextContent();
 
-        System.out.println(bonusState);
+        System.out.println(response.toString());
         cardStatus.setText(bonusState);
         if (bonusState.equals("ACCEPTED")) {
             try {
                 URL url = new URL("http://127.0.0.1:8080/api/users/" + bonusCardNumber + "/" + goodThruMonth + "/" + goodThruYear);
+                System.out.println(url.toString());
                 HttpURLConnection userHttpURLConnection = (HttpURLConnection) url.openConnection();
                 userHttpURLConnection.setRequestMethod("GET");
                 int responseCode = userHttpURLConnection.getResponseCode();
@@ -608,7 +611,6 @@ public class CashierController implements Initializable {
                     in = new BufferedReader(new InputStreamReader(userHttpURLConnection.getInputStream()));
                     inputLine = "";
                     response = new StringBuffer();
-
                     while ((inputLine = in.readLine()) != null) {
                         response.append(inputLine);
                     }
@@ -617,6 +619,8 @@ public class CashierController implements Initializable {
 
                     pvp.models.interfaces.User user = User.getObjectFromJson(new JSONObject(response.toString()));
                     this.order.setUser(user);
+                    System.out.println(this.order.getUser());
+                    System.out.println(user);
                     Integer bonusPoints = user.getBonusPoints();
                     if (payingWithBonusPoints > bonusPoints) {
                         this.order.createPayment(bonusPoints, PaymentType.BONUS);
@@ -629,6 +633,9 @@ public class CashierController implements Initializable {
                 } else {
                     System.out.println("Fuck");
                 }
+            }catch (JSONException e) {
+                throw e;
+                //cardStatus.setText("User was not found");
             } catch (Exception e) {
                 throw e;
             }

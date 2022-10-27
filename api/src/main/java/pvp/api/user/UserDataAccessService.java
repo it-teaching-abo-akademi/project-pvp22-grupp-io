@@ -58,7 +58,7 @@ public class UserDataAccessService {
 
     User getUserByCard(String number, Integer month, Integer year) {
         String sql = "" +
-                "SELECT *" +
+                "SELECT * " +
                 "FROM \"user\" u " +
                 "INNER JOIN bonus_card bc ON bc.user_id = u.id " +
                 "WHERE bc.number = '" + number + "' AND " +

@@ -1,6 +1,7 @@
 package pvp.models;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import pvp.models.abstractModels.PkModel;
 import pvp.models.interfaces.BonusCard;
@@ -96,12 +97,17 @@ public class User extends PkModel implements pvp.models.interfaces.User {
     @Override
     public JSONObject getJsonOfObject() {
         JSONObject json = new JSONObject();
+        ZonedDateTime birthDay = this.getBirthDay();
+        String bday = "";
+        if (birthDay != null) {
+            bday = birthDay.toString();
+        }
         json.put("pk", this.getPk());
         json.put("firstName", this.getFirstName());
         json.put("lastName", this.getLastName());
         json.put("sex", this.getSex().name());
         json.put("bonusPoints", this.getBonusPoints());
-        json.put("birthday", this.getBirthDay().toString());
+        json.put("birthday", bday);
         JSONArray bonusCards = new JSONArray();
         this.bonus_cards.forEach(bonusCard -> {
             bonusCard.setUser(null);
@@ -113,23 +119,39 @@ public class User extends PkModel implements pvp.models.interfaces.User {
     }
 
     public static pvp.models.interfaces.User getObjectFromJson(JSONObject json) {
+        Integer bPoints;
+        ZonedDateTime birthDay;
+        try {
+            bPoints = json.getInt("bonusPoints");
+        } catch (JSONException e) {
+            bPoints = Integer.parseInt(json.getString("bonusPoints"));
+        }
+        try {
+            String birthday = json.getString("birthday");
+            birthDay = ZonedDateTime.parse(birthday);
+        } catch (JSONException e) {
+            birthDay = null;
+        }
+
         pvp.models.interfaces.User user = new User(
                 json.getInt("pk"),
                 json.getString("firstName"),
                 json.getString("lastName"),
                 Sex.valueOf(json.getString("sex")),
-                ZonedDateTime.parse(json.getString("bonusPoints")),
+                birthDay,
                 new HashSet<BonusCard>(),
-                json.getInt("bonusPoints")
+                bPoints
         );
 
-        json.getJSONArray("bonus_cards").forEach(jsonObject -> {
-            Set<BonusCard> cards = user.getBonusCards();
-            BonusCard bonusCard = pvp.models.BonusCard.getObjectFromJson((JSONObject) jsonObject);
-            bonusCard.setUser(user);
-            cards.add(bonusCard);
-            user.setBonusCards(cards);
-        });
+        if (json.has("bonus_cards")) {
+            json.getJSONArray("bonus_cards").forEach(jsonObject -> {
+                Set<BonusCard> cards = user.getBonusCards();
+                BonusCard bonusCard = pvp.models.BonusCard.getObjectFromJson((JSONObject) jsonObject);
+                bonusCard.setUser(user);
+                cards.add(bonusCard);
+                user.setBonusCards(cards);
+            });
+        }
         return user;
     }
 }
