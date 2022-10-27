@@ -1,9 +1,11 @@
 package pvp.api.product;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -18,8 +20,11 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAllProducts() {
-        return this.productService.getAllProducts();
+    public List<Product> getAllProducts(@RequestHeader Map<String, String> headers) {
+        if (headers.containsKey("filters")) {
+            return this.productService.getAllProducts(new JSONObject(headers.get("filters")));
+        }
+        return this.productService.getAllProducts(new JSONObject());
     }
 
     @GetMapping("/{sku}")

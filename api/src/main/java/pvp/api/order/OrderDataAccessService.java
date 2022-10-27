@@ -15,10 +15,8 @@ import pvp.models.interfaces.User;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -101,38 +99,62 @@ public class OrderDataAccessService {
         } catch (NullPointerException e) {
             dbOrder = null;
         }
+        LocalDate nowDate = LocalDate.now();
+        String now = nowDate.toString().replace("-", "");
+        Integer userId = order.getUserId();
+        if (userId == 0) {
+            userId = null;
+        }
 
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         if (dbOrder == null) {  // If an order does not exist, a new one is created.
-            String sql = "" +
-                    "INSERT INTO \"order\" (" +
-                    " user_id," +
-                    " total_price," +
-                    " completed) "+
-                    "VALUES (?, ?, ?)";
+                String sql = "" +
+                        "INSERT INTO \"order\" (" +
+                        " total_price," +
+                        " completed," +
+                        " purchase_date";
+                if (userId != null) {
+                    sql = sql + ", user_id";
+                }
+                sql = sql +
+                        ") "+
+                        "VALUES (?, ?, '" + now + "'";
+                if (userId != null) {
+                    sql = sql + ", ?";
+                }
+                sql = sql + ")";
+                String finalSql = sql;
+                Integer finalUserId = userId;
+                int returnValue = jdbcTemplate.update(conn -> {
+                            PreparedStatement preparedStatement = conn.prepareStatement(finalSql, Statement.RETURN_GENERATED_KEYS);
 
-            int returnValue = jdbcTemplate.update(conn -> {
-                        PreparedStatement preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                            // Set parameters
+                            preparedStatement.setInt(1, order.getTotalPrice());
+                            preparedStatement.setBoolean(2, order.isComplete());
+                            if (finalUserId != null) {
+                                preparedStatement.setInt(4, finalUserId);
+                            }
+                            return preparedStatement;
 
-                        // Set parameters
-                        preparedStatement.setInt(1, order.getUserId());
-                        preparedStatement.setInt(2, order.getTotalPrice());
-                        preparedStatement.setBoolean(3, order.isComplete());
-
-                        return preparedStatement;
-
-                    }, generatedKeyHolder
-            );
+                        }, generatedKeyHolder
+                );
         } else {  // If an order does exist, it is updated.
             String sql = "" +
                     "UPDATE \"order\"" +
-                    " SET user_id = " + order.getUserId() + "," +
-                    " total_price = " + order.getTotalPrice() + "," +
-                    " completed = " + order.isComplete() + " " +
-                    "WHERE id = " + order.getPk();
+                    " SET" +
+                    " total_price = '" + order.getTotalPrice() + "'," +
+                    " completed = '" + order.isComplete() + "'," +
+                    " purchase_date = '" + now + "' ";
 
+
+            if (userId != null) {
+                sql = sql + ", user_id = '" + order.getUserId() + "',";
+            }
+            sql = sql + "WHERE id = " + order.getPk();
+
+            String finalSql = sql;
             int returnValue = jdbcTemplate.update(conn -> {
-                        PreparedStatement preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                        PreparedStatement preparedStatement = conn.prepareStatement(finalSql, Statement.RETURN_GENERATED_KEYS);
                         return preparedStatement;
                     }, generatedKeyHolder
             );

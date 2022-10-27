@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS "order" (
     user_id INT,
     total_price INT,
     completed BOOLEAN,
-    CONSTRAINT user_fk FOREIGN KEY(user_id) REFERENCES "user"(id) ON DELETE RESTRICT
+    purchase_date DATE,
+    CONSTRAINT user_fk FOREIGN KEY(user_id) REFERENCES "user"(id)
 );
 
 CREATE TABLE IF NOT EXISTS order_line (

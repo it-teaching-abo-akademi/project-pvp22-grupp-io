@@ -39,7 +39,7 @@ public class BonusCardAccessService {
         return null;
     }
 
-    int inserBonusCard(BonusCard card) {
+    int insertBonusCard(BonusCard card) {
         BonusCard dbCard = this.getBonusCardId(card.getPk());
 
         if (dbCard == null) {
@@ -65,14 +65,14 @@ public class BonusCardAccessService {
             );
         } else {
             String sql = "UPDATE bonus_card" +
-                    "SET" +
-                    " number = " + card.getNumber() +
-                    ", good_thru_month = " + card.getGoodThruMonth() +
-                    ", good_thru_year = " + card.getGoodThruYear() +
-                    ", blocked = " + card.isBlocked() +
-                    ", expired = " + card.isExpired() +
-                    ", holderName = " + card.getHolderName() +
-                    ", user_id = " + card.getUserId() +
+                    " SET" +
+                    " number = '" + card.getNumber() + "'" +
+                    ", good_thru_month = '" + card.getGoodThruMonth() + "'" +
+                    ", good_thru_year = '" + card.getGoodThruYear() + "'" +
+                    ", blocked = '" + card.isBlocked() + "'" +
+                    ", expired = '" + card.isExpired() + "'" +
+                    ", holderName = '" + card.getHolderName() + "'" +
+                    ", user_id = '" + card.getUserId() + "' " +
                     "WHERE id = " + card.getPk();
             return jdbcTemplate.update(sql);
         }

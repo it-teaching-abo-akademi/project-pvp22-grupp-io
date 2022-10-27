@@ -32,5 +32,6 @@
       <TextField fx:id="customerInput" layoutX="23.0" layoutY="388.0" prefHeight="25.0" prefWidth="239.0" promptText="Customer" />
       <TextField fx:id="skuInput" layoutX="276.0" layoutY="388.0" prefHeight="25.0" prefWidth="157.0" promptText="sku" />
       <Button layoutX="276.0" layoutY="413.0" mnemonicParsing="false" onAction="#limitSku" prefHeight="26.0" prefWidth="157.0" text="Search by sku" />
+       <Button layoutX="440.0" layoutY="413.0" mnemonicParsing="false" onAction="#doSearch" prefHeight="26.0" prefWidth="157.0" text="Execute search" />
    </children>
 </AnchorPane>

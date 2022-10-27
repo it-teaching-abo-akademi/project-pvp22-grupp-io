@@ -16,10 +16,8 @@ import pvp.models.interfaces.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import pvp.cashier.models.Order;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
@@ -28,7 +26,7 @@ import java.util.*;
 public class AdminController implements Initializable {
 
 
-    HashMap<String, String> filterArgs;
+    JSONObject filterArgs;
 
     @FXML
     public TextField skuInput;
@@ -66,7 +64,7 @@ public class AdminController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        filterArgs = new HashMap<String, String>();
+        filterArgs = new JSONObject();
         productColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         //priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
         priceColumn.setCellValueFactory(param -> {
@@ -91,16 +89,12 @@ public class AdminController implements Initializable {
      * information based of filterArgs, used by the different limit methods
      */
     private void showProducts() throws IOException {
-
         productArrayList = new ArrayList<>();
-        String urlArgs = "";
-        for (Map.Entry me : filterArgs.entrySet()) {
-            urlArgs = urlArgs + me.getKey() + "=" + me.getValue() + ",";
-        }
         searchedProducts = new ArrayList<Product>();
-        URL url = new URL("http://127.0.0.1:8080/api/products/?" + urlArgs);
+        URL url = new URL("http://127.0.0.1:8080/api/products/");
         HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
         httpURLConnection.setRequestMethod("GET");
+        httpURLConnection.setRequestProperty("filters", filterArgs.toString());
         int responseCode = httpURLConnection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) { // success
             BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
@@ -116,20 +110,10 @@ public class AdminController implements Initializable {
 
             json.forEach(object -> {
                 JSONObject element = (JSONObject) object;
-
-                String name = element.optString("name", "");
-                String sku = element.optString("sku", "");
-
-                productArrayList.add(new pvp.models.Product(
-                        element.getInt("pk"),
-                        element.getInt("price"),
-                        name,
-                        sku,
-                        element.getInt("soldCount")
-                ));
-                productView.getItems().setAll(productArrayList);
+                productArrayList.add(pvp.models.Product.getObjectFromJson(element));
             });
         }
+        productView.getItems().setAll(productArrayList);
     }
 
     /**
@@ -140,15 +124,10 @@ public class AdminController implements Initializable {
         String newPriceString = newPriceInput.getText();
         int amount = (int) (Float.parseFloat(newPriceString) * 100);
 
-        JSONObject json = new JSONObject();
-
         Product productToEdit = productView.getSelectionModel().getSelectedItem();
         productToEdit.setPrice(amount);
 
-        json.put("price", productToEdit.getPrice());
-        json.put("pk", productToEdit.getPk());
-        json.put("sku", productToEdit.getSku());
-        json.put("name", productToEdit.getName());
+        JSONObject json = productToEdit.getJsonOfObject();
 
         URL postURL = new URL("http://localhost:8080/api/products");
         HttpURLConnection httpURLConnection = (HttpURLConnection) postURL.openConnection();
@@ -157,20 +136,19 @@ public class AdminController implements Initializable {
         httpURLConnection.setDoOutput(true);
         OutputStream os = httpURLConnection.getOutputStream();
         os.write(json.toString().getBytes());
-        System.out.println(json.toString());
         os.flush();
         os.close();
-        System.out.println(httpURLConnection.getResponseCode());
+        httpURLConnection.getResponseCode();
         showProducts();
     }
 
     public void limitTime(ActionEvent actionEvent) {
         LocalDate newTimeStartString = timeInputStart.getValue();
         LocalDate newTimeEndString = timeInputEnd.getValue();
-        if (filterArgs.containsKey("startTime")) {
+        if (filterArgs.has("startTime")) {
             filterArgs.remove("startTime");
         }
-        if (filterArgs.containsKey("endTime")) {
+        if (filterArgs.has("endTime")) {
             filterArgs.remove("endTime");
         }
         if (newTimeStartString != null){
@@ -181,32 +159,49 @@ public class AdminController implements Initializable {
         }
     }
 
+    public void doSearch(ActionEvent actionEvent) throws IOException {
+        showProducts();
+    }
+
     public void limitAge(ActionEvent actionEvent) {
         String newAgeString = ageInput.getText();
+        if (newAgeString.equals("")) {
+            filterArgs.remove("age");
+            return;
+        }
         filterArgs.put("age", newAgeString);
     }
 
     public void limitMale(ActionEvent actionEvent) {
-        filterArgs.put("gender", "male");
+        filterArgs.put("sex", "MALE");
     }
 
     public void limitSexBoth(ActionEvent actionEvent) {
-        filterArgs.put("gender", "both");
-
+        if (filterArgs.has("sex")){
+            filterArgs.remove("sex");
+        }
     }
 
     public void limitFemale(ActionEvent actionEvent) {
-        filterArgs.put("gender", "female");
+        filterArgs.put("sex", "FEMALE");
     }
 
     public void limitCustomer(ActionEvent actionEvent) {
         String newCustomerString = customerInput.getText();
+        if (newCustomerString.equals("")) {
+            filterArgs.remove("customer");
+            return;
+        }
         filterArgs.put("customer", newCustomerString);
     }
 
 
     public void limitSku(ActionEvent actionEvent) {
         String newSkuString = skuInput.getText();
+        if (newSkuString.equals("")) {
+            filterArgs.remove("sku");
+            return;
+        }
         filterArgs.put("sku", newSkuString);
     }
 

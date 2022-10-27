@@ -59,7 +59,7 @@
       <TextField fx:id="cardStatus" layoutX="691.0" layoutY="372.0" />
       <TextField fx:id="discountAmount" alignment="CENTER" layoutX="23.0" layoutY="475.0" prefHeight="26.0" prefWidth="198.0" promptText="discount amount" />
       <Button alignment="CENTER" layoutX="23.0" layoutY="502.0" mnemonicParsing="false" onAction="#addDiscount" prefHeight="26.0" prefWidth="198.0" text="add discount to product" />
-      <TextField fx:id="cashAmount1" alignment="CENTER" layoutX="266.0" layoutY="449.0" prefHeight="26.0" prefWidth="206.0" promptText="enter amount of bonus points" />
-      <Button alignment="CENTER" layoutX="267.0" layoutY="475.0" mnemonicParsing="false" onAction="#payWithCash" prefHeight="26.0" prefWidth="205.0" text="pay with bonus card" />
+      <TextField fx:id="bonusAmount" alignment="CENTER" layoutX="266.0" layoutY="449.0" prefHeight="26.0" prefWidth="206.0" promptText="enter amount of bonus points" />
+      <Button alignment="CENTER" layoutX="267.0" layoutY="475.0" mnemonicParsing="false" onAction="#payWithBonus" prefHeight="26.0" prefWidth="205.0" text="pay with bonus card" />
    </children>
 </AnchorPane>

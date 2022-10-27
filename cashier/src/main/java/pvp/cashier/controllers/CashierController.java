@@ -54,6 +54,7 @@ import pvp.models.interfaces.OrderLine;
 import pvp.models.interfaces.Payment;
 import pvp.models.interfaces.Product;
 
+import javax.swing.plaf.synth.SynthStyle;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -111,6 +112,8 @@ public class CashierController implements Initializable {
     private TextField amountLeftToPay;
     @FXML
     private TextField orderTotal;
+    @FXML
+    private TextField bonusAmount;
 
     private CustomerController customerController;
     private pvp.models.interfaces.Order order;
@@ -193,8 +196,8 @@ public class CashierController implements Initializable {
                 response.append(inputLine);
             }
             in.close();
+            this.order.setPk(Integer.parseInt(response.toString()));
         }
-
     }
 
     /**
@@ -223,30 +226,10 @@ public class CashierController implements Initializable {
 
             JSONArray json = new JSONArray(response.toString());
             if (json.length() == 1) {
-                JSONObject element = (JSONObject) json.get(0);
-                String name = element.optString("name", "");
-                String sku = element.optString("sku", "");
-
-                addSelectedProduct(new pvp.models.Product(
-                        element.getInt("pk"),
-                        element.getInt("price"),
-                        name,
-                        sku,
-                        element.getInt("soldCount")
-                ));
+                addSelectedProduct(pvp.models.Product.getObjectFromJson((JSONObject) json.get(0)));
             } else {
                 json.forEach(object -> {
-                    JSONObject element = (JSONObject) object;
-                    String name = element.optString("name", "");
-                    String sku = element.optString("sku", "");
-
-                    searchedProducts.add(new pvp.models.Product(
-                            element.getInt("pk"),
-                            element.getInt("price"),
-                            name,
-                            sku,
-                            element.getInt("soldCount")
-                    ));
+                    searchedProducts.add(pvp.models.Product.getObjectFromJson((JSONObject) object));
                 });
                 openProductList();
             }
@@ -298,29 +281,26 @@ public class CashierController implements Initializable {
      * Enables deserializer to Order by adding it as a JSONObject.
      */
     private pvp.models.interfaces.Order deserializeOrder(JSONObject jsonOrder) {
+        pvp.models.interfaces.User user = null;
+        System.out.println(jsonOrder.toString());
+        System.out.println(jsonOrder.get("user"));
+        if (jsonOrder.has("user") && !jsonOrder.get("user").equals(null)) {
+            user = User.getObjectFromJson(jsonOrder.getJSONObject("user"));
+        }
         pvp.models.interfaces.Order order = new Order(
                 jsonOrder.getInt("pk"),
                 jsonOrder.getInt("totalPrice"),
                 new HashSet<OrderLine>(),
-                User.getObjectFromJson(jsonOrder.getJSONObject("user")),
+                user,
                 new HashSet<Payment>(),
                 jsonOrder.getBoolean("complete")
         );
         JSONArray orderLines = jsonOrder.getJSONArray("order_lines");
         for (int i = 0; i < orderLines.length(); i++) {
             JSONObject jsonOrderLine = orderLines.getJSONObject(i);
-            JSONObject jsonProduct = jsonOrderLine.getJSONObject("product");
-            String name = "";
-            if (!jsonProduct.isNull("name")) {
-                name = jsonProduct.getString("name");
-            }
 
-            Product product = new pvp.models.Product(
-                    jsonProduct.getInt("pk"),
-                    jsonProduct.getInt("price"),
-                    name,
-                    jsonProduct.getString("sku"),
-                    jsonProduct.getInt("soldCount")
+            Product product = pvp.models.Product.getObjectFromJson(
+                    jsonOrderLine.getJSONObject("product")
             );
             OrderLine orderLine = new pvp.models.OrderLine(
                     jsonOrderLine.getInt("pk"),
@@ -396,7 +376,7 @@ public class CashierController implements Initializable {
     private void payWithCash(ActionEvent event) throws IOException {
         String amountString = cashAmount.getText();
         try {
-            int amount = Integer.parseInt(amountString);
+            int amount = (int) (Float.parseFloat(amountString) * 100);
             boolean cashBoxIsOpen = false;
             HttpURLConnection httpURLConnection = (HttpURLConnection) cashBoxStatusUrl.openConnection();
             httpURLConnection.setRequestMethod("GET");
@@ -419,15 +399,17 @@ public class CashierController implements Initializable {
             }
             int totalPrice = this.order.getTotalPrice();
             int paidAmount = this.order.getTotalPaidAmount();
-            System.out.println(paidAmount);
             int totalLeftToPay = totalPrice - paidAmount;
             if (totalLeftToPay >= amount) {
                 this.order.createPayment(amount, PaymentType.CASH);
+                addBonusPoints(amount);
             } else {
                 this.order.createPayment(totalLeftToPay, PaymentType.CASH);
-                amountToCustomer.setText(String.valueOf((amount - totalLeftToPay))+ "€");
-                saveOrder(event);
+                amountToCustomer.setText(priceRounder(amount - totalLeftToPay));
+                this.order.setIsComplete(true);
+                addBonusPoints(totalLeftToPay);
             }
+            saveOrder(event);
             updateOrderLines();
             cashAmount.clear();
         } catch (NumberFormatException e){}
@@ -456,6 +438,7 @@ public class CashierController implements Initializable {
 
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document();
         PdfWriter writer = PdfWriter.getInstance(doc, fos);
+        Map<Integer, Integer> vats = new HashMap<>();
 
         String date = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
 
@@ -467,6 +450,10 @@ public class CashierController implements Initializable {
         doc.add(new Paragraph("Items"));
         doc.add(new Paragraph(String.format("----------------------------------------------------------------------------")));
         for (OrderLine orderLine: this.order.getOrderLines()) {
+            Integer vat = orderLine.getProduct().getVat();
+            Integer totalVatSum = vats.getOrDefault(vat, 0);
+            totalVatSum = totalVatSum + orderLine.getTotalPrice();
+            vats.put(vat, totalVatSum);
             doc.add(new Paragraph(String.format(
                     "%s\n%s %50d * %d = %d",
                     orderLine.getProduct().getName(),
@@ -483,7 +470,15 @@ public class CashierController implements Initializable {
                     "Payment type", payment.getPaymentType(),
                     "Amount", payment.getAmount())));
         }
-        doc.add(new Paragraph("VAT: "));
+
+        Integer totalVat = 0;
+        for (Map.Entry<Integer, Integer> vat : vats.entrySet()) {
+            if (vat.getKey() > 0){
+                totalVat = totalVat + (vat.getValue() / (1 + (vat.getKey() / 100)));
+            }
+        };
+
+        doc.add(new Paragraph("VAT: " + totalVat));
         doc.add(new Paragraph());
 
         if (order.getUser() != null) {
@@ -516,12 +511,135 @@ public class CashierController implements Initializable {
         } catch (IOException e){
                 System.err.println("Exception while trying to create pdf document - " + e);
         }
+    }
 
+    /**
+     * payWithBonus()
+     * Pay with payment type CARD.
+     * WAITING_FOR_PAYMENT: the process stops until the customer has paid (the "swipe card"-button has been pressed).
+     * DONE: the payment has been completed and registered.
+     * IDEAL: the status of the card is IDEAL when it is ready for payment-requests.
+     */
+    @FXML
+    private void payWithBonus(ActionEvent event) throws IOException, JAXBException, InterruptedException, ParserConfigurationException, SAXException {
+        HttpURLConnection httpURLConnection = (HttpURLConnection) cardReaderStatusUrl.openConnection();
+        httpURLConnection.setRequestMethod("GET");
+        httpURLConnection.getResponseCode();
+        BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+        String amountString = bonusAmount.getText();
+
+        while ((inputLine = in .readLine()) != null) {
+            response.append(inputLine);
+        } in .close();
+        if (response.toString().equals("WAITING_FOR_PAYMENT")) {
+            httpURLConnection = (HttpURLConnection) cardReaderAbortUrl.openConnection();
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.getResponseCode();
+            payWithBonus(event);
+            return;
+        } else if (response.toString().equals("DONE")) {
+            httpURLConnection = (HttpURLConnection) cardReaderResetUrl.openConnection();
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.getResponseCode();
+            payWithBonus(event);
+            return;
+        }
+
+        httpURLConnection = (HttpURLConnection) cardReaderStartUrl.openConnection();
+        httpURLConnection.setRequestMethod("POST");
+        httpURLConnection.setDoOutput(true);
+        OutputStream os = httpURLConnection.getOutputStream();
+        Integer payingWithBonusPoints = (int)(Float.parseFloat(amountString) * 100);
+
+        os.write(("amount=" + payingWithBonusPoints).getBytes());
+        os.flush();
+        os.close();
+        httpURLConnection.getResponseCode();
+
+        while (true) {
+            httpURLConnection = (HttpURLConnection) cardReaderStatusUrl.openConnection();
+            httpURLConnection.setRequestMethod("GET");
+            httpURLConnection.getResponseCode();
+            in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+            response = new StringBuffer();
+
+            while ((inputLine = in .readLine()) != null) {
+                response.append(inputLine);
+            } in .close();
+
+            if (response.toString().equals("DONE")) {
+                break;
+            }
+            cardStatus.setText(response.toString());
+            TimeUnit.SECONDS.sleep(1);
+        }
+
+        httpURLConnection = (HttpURLConnection) cardReaderResultUrl.openConnection();
+        httpURLConnection.setRequestMethod("GET");
+        in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+        response = new StringBuffer();
+
+        while ((inputLine = in .readLine()) != null) {
+            response.append(inputLine);
+        } in .close();
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(new InputSource(new StringReader(response.toString())));
+        doc.getDocumentElement().normalize();
+        Element result = (Element) doc.getElementsByTagName("result").item(0);
+        String bonusCardNumber = result.getElementsByTagName("bonusCardNumber").item(0).getTextContent();
+        String bonusState = result.getElementsByTagName("bonusState").item(0).getTextContent();
+        String goodThruMonth = result.getElementsByTagName("goodThruMonth").item(0).getTextContent();
+        String goodThruYear = result.getElementsByTagName("goodThruYear").item(0).getTextContent();
+
+        System.out.println(bonusState);
+        cardStatus.setText(bonusState);
+        if (bonusState.equals("ACCEPTED")) {
+            try {
+                URL url = new URL("http://127.0.0.1:8080/api/users/" + bonusCardNumber + "/" + goodThruMonth + "/" + goodThruYear);
+                HttpURLConnection userHttpURLConnection = (HttpURLConnection) url.openConnection();
+                userHttpURLConnection.setRequestMethod("GET");
+                int responseCode = userHttpURLConnection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                    in = new BufferedReader(new InputStreamReader(userHttpURLConnection.getInputStream()));
+                    inputLine = "";
+                    response = new StringBuffer();
+
+                    while ((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+                    System.out.println(response.toString());
+
+                    pvp.models.interfaces.User user = User.getObjectFromJson(new JSONObject(response.toString()));
+                    this.order.setUser(user);
+                    Integer bonusPoints = user.getBonusPoints();
+                    if (payingWithBonusPoints > bonusPoints) {
+                        this.order.createPayment(bonusPoints, PaymentType.BONUS);
+                        user.setBonusPoints(0);
+                    } else {
+                        this.order.createPayment(payingWithBonusPoints, PaymentType.BONUS);
+                        user.setBonusPoints(bonusPoints-payingWithBonusPoints);
+                    }
+
+                } else {
+                    System.out.println("Fuck");
+                }
+            } catch (Exception e) {
+                throw e;
+            }
+        }
+        saveOrder(event);
+        updateOrderLines();
     }
 
     /**
      * payWithCard()
-     * Pay with payment type CARD.
+     * Pay with payment type CREDIT or DEBIT.
      * WAITING_FOR_PAYMENT: the process stops until the customer has paid (the "swipe card"-button has been pressed).
      * DONE: the payment has been completed and registered.
      * IDEAL: the status of the card is IDEAL when it is ready for payment-requests.
@@ -597,7 +715,6 @@ public class CashierController implements Initializable {
         Element result = (Element) doc.getElementsByTagName("result").item(0);
         // String bonusCardNumber = result.getElementsByTagName("bonusCardNumber").item(0).getTextContent();
         // String bonusState = result.getElementsByTagName("bonusState").item(0).getTextContent();
-        String paymentCardNumber = result.getElementsByTagName("paymentCardNumber").item(0).getTextContent();
         // String goodThruMonth = result.getElementsByTagName("goodThruMonth").item(0).getTextContent();
         // String goodThruYear = result.getElementsByTagName("goodThruYear").item(0).getTextContent();
         String paymentState = result.getElementsByTagName("paymentState").item(0).getTextContent();
@@ -605,7 +722,9 @@ public class CashierController implements Initializable {
 
         cardStatus.setText(paymentState);
         if (paymentState.equals("ACCEPTED")) {
-            this.order.createPayment(amountToPay, PaymentType.DEBIT);
+            this.order.createPayment(amountToPay, PaymentType.valueOf(paymentCardType));
+            this.order.setIsComplete(true);
+            addBonusPoints(amountToPay);
         }
         saveOrder(event);
         updateOrderLines();
@@ -692,5 +811,14 @@ public class CashierController implements Initializable {
 
     public String priceRounder(int price) {
         return String.format("$%.2f€ ", price * 0.01);
+    }
+
+    public void addBonusPoints(int points){
+        pvp.models.interfaces.User user = this.order.getUser();
+        if (user == null) {
+            return;
+        }
+        Integer bonusPoints = user.getBonusPoints();
+        this.order.getUser().setBonusPoints(bonusPoints + points/100);
     }
 }

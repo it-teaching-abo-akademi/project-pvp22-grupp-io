@@ -62,7 +62,6 @@ public class OrderDeserializer extends StdDeserializer<Order> {
 
         pvp.models.interfaces.User user = null;
         if (node.has("user")) {
-            System.out.println(node.textValue());
             user = User.getObjectFromJson(new JSONObject(node.textValue()));
         }
         JsonNode orderPkNode = node.get("pk");

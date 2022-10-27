@@ -91,9 +91,25 @@ public class UserParser extends DefaultHandler {
             ZonedDateTime birthday = ZonedDateTime.parse(currentValue.toString());
             currentUser.setBirthDay(birthday);
         }
-        if (qName.equalsIgnoreCase("sex")) {
-            currentUser.setSex(Sex.valueOf(currentValue.toString()));
+        if (qName.equalsIgnoreCase("number")) {
+            currentBonusCard.setNumber(currentValue.toString());
         }
+        if (qName.equalsIgnoreCase("goodThruMonth")) {
+            currentBonusCard.setGoodThruMonth(Integer.parseInt(currentValue.toString()));
+        }
+        if (qName.equalsIgnoreCase("goodThruYear")) {
+            currentBonusCard.setGoodThruYear(Integer.parseInt(currentValue.toString()));
+        }
+        if (qName.equalsIgnoreCase("blocked")) {
+            currentBonusCard.setIsBlocked(Boolean.valueOf(currentValue.toString()));
+        }
+        if (qName.equalsIgnoreCase("expired")) {
+            currentBonusCard.setIsExpired(Boolean.valueOf(currentValue.toString()));
+        }
+        if (qName.equalsIgnoreCase("holderName")) {
+            currentBonusCard.setHolderName(currentValue.toString());
+        }
+
         if (qName.equalsIgnoreCase("bonusCard")) {
             Set<BonusCard> cards = currentUser.getBonusCards();
             cards.add(currentBonusCard);

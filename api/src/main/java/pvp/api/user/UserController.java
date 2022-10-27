@@ -23,9 +23,18 @@ public class UserController {
         return this.userService.getAllUsers();
     }
 
-    @GetMapping("/{customer_reference}")
-    public User getNoteById(@PathVariable(value = "customer_reference") UUID customerReference){
-        return userService.findByReference(customerReference);
+    @GetMapping("/{search}")
+    public User getUserBySearch(@PathVariable(value = "search") String search){
+        return userService.findBySearch(search);
+    }
+
+    @GetMapping("/{number}/{month}/{year}")
+    public User getUserByCard(
+            @PathVariable(value = "number") String number,
+            @PathVariable(value = "month") Integer month,
+            @PathVariable(value = "year") Integer year
+    ){
+        return userService.findByCard(number, month, year);
     }
 
     @PostMapping

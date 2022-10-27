@@ -22,7 +22,7 @@ public class BonusCardService {
 
     public BonusCard getBonusCardId(int id) {return bonusCardAccessService.getBonusCardId(id);}
 
-    void addNewBonusCard(BonusCard card) {
-        bonusCardAccessService.inserBonusCard(card);
+    public void addNewBonusCard(BonusCard card) {
+        bonusCardAccessService.insertBonusCard(card);
     }
 }

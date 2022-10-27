@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
+    compressed_birth_day DATE,
     birth_day VARCHAR(32),
     sex VARCHAR(50),
     bonus_points INT
