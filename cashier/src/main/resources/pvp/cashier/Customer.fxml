@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="554.0" prefWidth="385.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pvp.cashier.controllers.CustomerController">
+   <children>
+      <TableView fx:id="customerProdView" prefHeight="400.0" prefWidth="301.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columns>
+          <TableColumn fx:id="nameColumn" prefWidth="105.60003966093063" text="product name" />
+          <TableColumn fx:id="amountColumn" prefWidth="88.79998779296875" text="amount" />
+            <TableColumn fx:id="priceColumn" prefWidth="95.20005798339844" text="price" />
+            <TableColumn fx:id="discountColumn" prefWidth="96.7999267578125" text="discount" />
+        </columns>
+      </TableView>
+      <TextField editable="false" layoutX="117.0" layoutY="432.0" fx:id="orderTotal" />
+      <Label alignment="CENTER" layoutX="129.0" layoutY="405.0" prefHeight="26.0" prefWidth="126.0" text="Total Order Price">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" layoutX="96.0" layoutY="486.0" prefHeight="26.0" prefWidth="192.0" text="Amount Left To Pay">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <TextField editable="false" layoutX="117.0" layoutY="513.0" fx:id="leftToPay"/>
+   </children>
+</AnchorPane>

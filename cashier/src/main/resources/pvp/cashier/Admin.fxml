@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="456.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pvp.cashier.controllers.AdminController">
+   <children>
+      <TableView fx:id="productView" layoutX="1.0" prefHeight="270.0" prefWidth="600.0">
+        <columns>
+            <TableColumn fx:id="productColumn" prefWidth="140.0" text="Product" />
+            <TableColumn fx:id="priceColumn" prefWidth="120.0" text="Price" />
+            <TableColumn fx:id="skuColumn" prefWidth="120.0" text="sku" />
+            <TableColumn fx:id="pkColumn" prefWidth="126.0" text="pk" />
+            <TableColumn fx:id="itemSoldColumn" prefWidth="100.0" text="Items sold" />
+        </columns>
+      </TableView>
+      <DatePicker fx:id="timeInputStart" layoutX="23.0" layoutY="286.0" promptText="Time period start" />
+      <Button layoutX="35.0" layoutY="338.0" mnemonicParsing="false" onAction="#limitTime" prefHeight="26.0" prefWidth="150.0" text="Limit" />
+      <TextField fx:id="ageInput" layoutX="226.0" layoutY="286.0" promptText="Customer age" />
+      <Button layoutX="225.0" layoutY="313.0" mnemonicParsing="false" onAction="#limitAge" prefHeight="26.0" prefWidth="150.0" text="Limit" />
+      <Button layoutX="395.0" layoutY="286.0" mnemonicParsing="false" onAction="#limitMale" text="Male" />
+      <Button layoutX="531.0" layoutY="286.0" mnemonicParsing="false" onAction="#limitSexBoth" text="Both" />
+      <Button layoutX="459.0" layoutY="286.0" mnemonicParsing="false" onAction="#limitFemale" text="Female" />
+      <TextField fx:id="newPriceInput" layoutX="412.0" layoutY="326.0" promptText="New price" />
+      <Button layoutX="443.0" layoutY="363.0" mnemonicParsing="false" onAction="#editPrice" text="Set new price" />
+      <Button layoutX="23.0" layoutY="413.0" mnemonicParsing="false" onAction="#limitCustomer" prefHeight="26.0" prefWidth="239.0" text="Search products bought by customer" />
+      <DatePicker fx:id="timeInputEnd" layoutX="23.0" layoutY="314.0" promptText="Time period end" />
+      <TextField fx:id="customerInput" layoutX="23.0" layoutY="388.0" prefHeight="25.0" prefWidth="239.0" promptText="Customer" />
+      <TextField fx:id="skuInput" layoutX="276.0" layoutY="388.0" prefHeight="25.0" prefWidth="157.0" promptText="sku" />
+      <Button layoutX="276.0" layoutY="413.0" mnemonicParsing="false" onAction="#limitSku" prefHeight="26.0" prefWidth="157.0" text="Search by sku" />
+       <Button layoutX="440.0" layoutY="413.0" mnemonicParsing="false" onAction="#doSearch" prefHeight="26.0" prefWidth="157.0" text="Execute search" />
+   </children>
+</AnchorPane>
