@@ -17,7 +17,7 @@ public class OrderTest {
     PaymentType paymentType = PaymentType.CASH;
     HashSet<Payment> paymentSet = new HashSet<>();
     HashSet<BonusCard> bonuscards = new HashSet<BonusCard>();
-    Product product = new Product(20, 20, "Hula hula ring", "22", 23);
+    Product product = new Product(20, 20, "Hula hula ring", "22", 23, 10, "toy");
     Order order = new Order(6, 7, new HashSet<pvp.models.interfaces.OrderLine>(), user, new HashSet<pvp.models.interfaces.Payment>(), true);
     Payment payment = new Payment(11, 12, paymentType, order);
     BonusCard bonuscard = new pvp.models.BonusCard(1, "2", "Bubben", 3, 2030, false, false, user);
