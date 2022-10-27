@@ -128,6 +128,9 @@ public class User extends PkModel implements pvp.models.interfaces.User {
         }
         try {
             String birthday = json.getString("birthday");
+            if (birthday.equals("")) {
+                throw new JSONException("Fail");
+            }
             birthDay = ZonedDateTime.parse(birthday);
         } catch (JSONException e) {
             birthDay = null;

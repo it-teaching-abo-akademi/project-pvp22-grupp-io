@@ -41,6 +41,7 @@ public class OrderDeserializer extends StdDeserializer<Order> {
     @Override
     public Order deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonNode node = p.readValueAsTree();
+        System.out.println(node.toString());
         ArrayNode paymentNode = (ArrayNode) node.get("payment_lines");
         ArrayNode orderLines = (ArrayNode) node.get("order_lines");
         Set<OrderLine> orderLineSet = new HashSet<OrderLine>();
@@ -62,7 +63,8 @@ public class OrderDeserializer extends StdDeserializer<Order> {
 
         pvp.models.interfaces.User user = null;
         if (node.has("user")) {
-            user = User.getObjectFromJson(new JSONObject(node.textValue()));
+            System.out.println(node.get("user").toString());
+            user = User.getObjectFromJson(new JSONObject(node.get("user").toString()));
         }
         JsonNode orderPkNode = node.get("pk");
         Integer orderPk = null;

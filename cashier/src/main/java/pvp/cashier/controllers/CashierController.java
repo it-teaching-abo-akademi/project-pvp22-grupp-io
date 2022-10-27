@@ -627,7 +627,7 @@ public class CashierController implements Initializable {
                         user.setBonusPoints(0);
                     } else {
                         this.order.createPayment(payingWithBonusPoints, PaymentType.BONUS);
-                        user.setBonusPoints(bonusPoints-payingWithBonusPoints);
+                        user.setBonusPoints(bonusPoints - payingWithBonusPoints);
                     }
 
                 } else {

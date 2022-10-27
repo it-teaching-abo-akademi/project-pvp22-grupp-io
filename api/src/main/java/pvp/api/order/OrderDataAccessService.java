@@ -102,6 +102,7 @@ public class OrderDataAccessService {
         LocalDate nowDate = LocalDate.now();
         String now = nowDate.toString().replace("-", "");
         Integer userId = order.getUserId();
+        System.out.println(order.getUserId());
         if (userId == 0) {
             userId = null;
         }
@@ -132,7 +133,7 @@ public class OrderDataAccessService {
                             preparedStatement.setInt(1, order.getTotalPrice());
                             preparedStatement.setBoolean(2, order.isComplete());
                             if (finalUserId != null) {
-                                preparedStatement.setInt(4, finalUserId);
+                                preparedStatement.setInt(3, finalUserId);
                             }
                             return preparedStatement;
 
@@ -144,14 +145,14 @@ public class OrderDataAccessService {
                     " SET" +
                     " total_price = '" + order.getTotalPrice() + "'," +
                     " completed = '" + order.isComplete() + "'," +
-                    " purchase_date = '" + now + "' ";
+                    " purchase_date = '" + now + "'";
 
 
             if (userId != null) {
-                sql = sql + ", user_id = '" + order.getUserId() + "',";
+                sql = sql + ", user_id = '" + order.getUserId() + "'";
             }
-            sql = sql + "WHERE id = " + order.getPk();
-
+            sql = sql + " WHERE id = '" + order.getPk() + "'";
+            System.out.println(sql);
             String finalSql = sql;
             int returnValue = jdbcTemplate.update(conn -> {
                         PreparedStatement preparedStatement = conn.prepareStatement(finalSql, Statement.RETURN_GENERATED_KEYS);

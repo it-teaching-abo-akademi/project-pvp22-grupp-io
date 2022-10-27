@@ -34,14 +34,11 @@ public class ProductDataAccessService {
      * Selects all products from the postgreSQL database.
      */
     List<Product> selectAllProducts(JSONObject json) {
-        String sql = "SELECT p.*, (SELECT COUNT(*) FROM order_line ol INNER JOIN \"order\" o " +
+        String sql = "SELECT p.*, (SELECT SUM(ol.quantity) FROM order_line ol INNER JOIN \"order\" o " +
                 "ON o.id = ol.order_id AND ol.product_id = p.id";
 
-        if (json.has("age") || json.has("sex")) {
-            sql = sql + "INNER JOIN \"user\" u ON o.user_id = u.id";
-        }
-        if (json.has("customer")) {
-            sql = sql + " INNER JOIN bonus_card bc ON bc.user_id = u.id";
+        if (json.has("age") || json.has("sex") || json.has("customer")) {
+            sql = sql + " INNER JOIN \"user\" u ON o.user_id = u.id";
         }
 
         sql = sql + " WHERE completed = true";
@@ -80,9 +77,12 @@ public class ProductDataAccessService {
             String customer = json.getString("customer");
             sql = sql + " AND (" +
                     "u.first_name ILIKE '%" + customer + "%' OR " +
-                    "u.last_name ILIKE '%" + customer + "%' OR " +
-                    "bc.holderName ILIKE '%" + customer + "%' OR " +
-                    "bc.number LIKE '" + customer + "')";
+                    "u.last_name ILIKE '%" + customer + "%'";
+            try {
+                Integer customerId = Integer.parseInt(customer);
+                sql = sql + " OR u.id ='" + customerId + "'";
+            } catch (Exception e) {}
+            sql = sql + ")";
         }
 
 
